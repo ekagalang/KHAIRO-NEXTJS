@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Khairo Tour — Haji & Umroh App
 
-## Getting Started
+Aplikasi katalog paket Haji & Umroh dengan keranjang belanja sederhana, dibuat dengan Next.js (App Router), Tailwind CSS v4, Prisma (MySQL), dan komponen UI berbasis shadcn.
 
-First, run the development server:
+**Fitur**
+- Daftar paket (filter, pencarian), detail paket, dan keranjang belanja
+- API berbasis App Router (`/app/api`) untuk produk dan settings
+- Prisma + MySQL untuk data (User, Product, CartItem, dsb.)
+- Tailwind CSS v4 (utility-first) dan shadcn/ui untuk komponen
+- Dukungan gambar eksternal (Unsplash) di `next/image`
+- Animasi halus untuk drawer keranjang
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+**Stack**
+- Next.js 16 (App Router) — `next.config.ts:1`
+- React 19 + TypeScript — `tsconfig.json:1`
+- Tailwind CSS 4 — `src/app/globals.css:1`
+- Prisma (MySQL) — `prisma/schema.prisma:1`
+- shadcn/ui + lucide-react — `components.json:1`
+
+**Persiapan**
+- Node.js 18.18+ (disarankan Node 20 LTS)
+- npm 9+ (atau pnpm/yarn jika diinginkan)
+- MySQL server (lokal atau hosted)
+
+**Setup Cepat (Local)**
+1) Clone repo dan masuk folder
+- `git clone <repo-url>`
+- `cd khairo-tour`
+
+2) Install dependencies
+- `npm install`
+
+3) Siapkan environment
+- Buat file `.env` di root proyek (jika belum ada) dengan contoh berikut:
 ```
+# Database MySQL
+DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/khairo_db"
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# NextAuth (opsional jika nanti menambah auth)
+NEXTAUTH_SECRET="please-change-this-secret"
+NEXTAUTH_URL="http://localhost:3000"
+```
+- Ganti `USER`, `PASSWORD`, dan nama database sesuai mesin MySQL Anda.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4) Inisialisasi database
+- Jalankan migrasi dan generate client:
+  - `npx prisma migrate dev`
+- Seed data awal (opsional):
+  - `npm run prisma:seed`
+- Cek data via Prisma Studio (opsional):
+  - `npx prisma studio`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+5) Jalankan aplikasi (development)
+- `npm run dev`
+- Buka `http://localhost:3000`
 
-## Learn More
+6) Build untuk production
+- `npm run build`
+- `npm start`
 
-To learn more about Next.js, take a look at the following resources:
+**Struktur Penting**
+- App routes dan halaman
+  - `src/app/page.tsx:1` — halaman katalog produk
+  - `src/app/products/[id]/page.tsx:1` — halaman detail produk
+  - `src/app/layout.tsx:1` — layout global + import `globals.css`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- API routes
+  - `src/app/api/products/route.ts:1` — list produk (+filter)
+  - `src/app/api/products/[id]/route.ts:1` — detail produk
+  - (Opsi) `src/app/api/settings` — konfigurasi WhatsApp, dsb.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- UI & state
+  - `src/components` — komponen UI (shadcn)
+  - `src/components/cart/CartDrawer.tsx:1` — drawer keranjang + animasi
+  - `src/components/product/ProductCard.tsx:1` — kartu produk
+  - `src/components/layout/Navbar.tsx:1` — navbar + tombol keranjang
+  - `src/contexts/CartContext.tsx:1` — state keranjang (localStorage)
 
-## Deploy on Vercel
+- Styling
+  - `src/app/globals.css:1` — Tailwind v4 `@import "tailwindcss";` + theme tokens
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Prisma
+  - `prisma/schema.prisma:1` — schema (User, Product, CartItem, dsb.)
+  - `prisma/seed.ts:1` — seed data awal
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Konfigurasi Next Image
+  - `next.config.ts:1` — domain gambar eksternal (Unsplash) sudah diizinkan
+
+**Catatan Penting**
+- Tailwind v4: tidak membutuhkan file `tailwind.config.js` default. Utilities tersedia setelah `@import "tailwindcss";` di `globals.css`.
+- React Compiler aktif di `next.config.ts` (`reactCompiler: true`).
+- Jika menambah CDN gambar lain, tambahkan host ke `images.remotePatterns` di `next.config.ts`.
+
+**Perintah Berguna**
+- Development: `npm run dev`
+- Lint: `npm run lint`
+- Build: `npm run build`
+- Start (prod): `npm start`
+- Prisma migrate (dev): `npx prisma migrate dev`
+- Prisma generate: `npx prisma generate`
+- Prisma Studio: `npx prisma studio`
+- Seed: `npm run prisma:seed`
+
+**Troubleshooting**
+- Tidak bisa konek DB (Prisma P1001)
+  - Pastikan MySQL berjalan dan `DATABASE_URL` benar.
+  - Coba `npx prisma db push` atau `npx prisma migrate dev` setelah membuat database.
+
+- Gambar eksternal error (next/image unconfigured host)
+  - Tambah domain di `next.config.ts` bagian `images.remotePatterns`.
+
+- Styling/utility Tailwind tidak terapkan
+  - Pastikan `src/app/globals.css` mengandung `@import "tailwindcss";` dan file tersebut di-import di `src/app/layout.tsx`.
+
+- Nilai harga menjadi 0/NaN
+  - Pastikan migrasi dan generate Prisma sudah dijalankan.
+  - Cek nilai numerik di Prisma Studio; seed ulang jika perlu.
+  - Hapus keranjang lama di localStorage jika struktur berubah: buka DevTools dan jalankan `localStorage.removeItem("cart")` lalu reload.
+
+- Keranjang tidak muncul animasinya
+  - Pastikan membuka dari tombol keranjang di navbar (`Navbar`), karena animasi dipicu saat prop `open` berubah.
+
+**Lisensi**
+Proyek ini untuk keperluan internal. Silakan sesuaikan lisensi sesuai kebutuhan Anda.
