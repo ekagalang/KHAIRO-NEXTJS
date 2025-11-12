@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Product } from "@prisma/client";
 import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ import Image from "next/image";
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,17 +34,32 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    if (params.id) {
-      fetchProduct(params.id as string);
+    if ((params as any)?.slug) {
+      fetchProduct((params as any).slug as string);
     }
-  }, [params.id]);
+  }, [(params as any)?.slug]);
 
-  const fetchProduct = async (id: string) => {
+  const fetchProduct = async (slugOrId: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/products/${id}`);
-      const data = await response.json();
-      setProduct(data);
+      // Try fetch by slug first
+      let response = await fetch(`/api/products/slug/${slugOrId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProduct(data);
+      } else {
+        // Fallback: try treat param as legacy ID, then redirect to slug
+        response = await fetch(`/api/products/${slugOrId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProduct(data);
+          if (data?.slug && typeof data.slug === "string") {
+            router.replace(`/products/${data.slug}`);
+          }
+        } else {
+          setProduct(null);
+        }
+      }
     } catch (error) {
       console.error("Error fetching product:", error);
       toast.error("Gagal memuat detail produk");

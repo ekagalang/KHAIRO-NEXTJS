@@ -40,7 +40,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
-      <Link href={`/products/${product.id}`} className="relative">
+      <Link href={`/products/${product.slug}`} className="relative">
         <div className="relative w-full h-48 sm:h-56 bg-gray-200">
           <Image
             src={mainImage}
@@ -90,7 +90,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       <CardContent className="flex-grow p-4">
-        <Link href={`/products/${product.id}`}>
+        <Link href={`/products/${product.slug}`}>
           <h3 className="font-bold text-lg mb-2 line-clamp-2 hover:text-primary transition-colors">
             {product.name}
           </h3>
@@ -142,7 +142,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
       <CardFooter className="p-4 pt-0 gap-2">
         <Button variant="outline" className="flex-1" asChild>
-          <Link href={`/products/${product.id}`}>Detail</Link>
+          <Link href={`/products/${product.slug}`}>Detail</Link>
         </Button>
         <Button
           className="flex-1 bg-primary hover:bg-primary/90 text-gray-800 font-semibold"

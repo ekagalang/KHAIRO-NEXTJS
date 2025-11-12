@@ -1,52 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 
-function toNumber(
-  value: unknown,
-  { fallback = 0, allowNull = false }: { fallback?: number; allowNull?: boolean } = {}
-) {
-  if (value === null || value === undefined || value === "") return allowNull ? (null as any) : fallback;
-  if (typeof value === "number") return Number.isFinite(value) ? value : fallback;
-  if (typeof value === "string") {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : fallback;
-  }
-  if (typeof value === "object") {
-    try {
-      const s = (value as any)?.toString?.();
-      if (typeof s === "string") {
-        const n = Number(s);
-        return Number.isFinite(n) ? n : fallback;
-      }
-    } catch {}
-  }
-  return fallback;
-}
-
-function serializeProduct(p: any) {
-  return {
-    ...p,
-    price: toNumber(p.price, { fallback: 0 }),
-    discountPrice: p.discountPrice === null || p.discountPrice === undefined
-      ? null
-      : toNumber(p.discountPrice, { fallback: 0 }),
-    quota: toNumber(p.quota, { fallback: 0 }),
-    quotaFilled: toNumber(p.quotaFilled, { fallback: 0 }),
-    images: typeof p.images === "string" ? p.images : "",
-    features: Array.isArray(p.features) ? p.features : [],
-    itinerary: Array.isArray(p.itinerary) ? p.itinerary : [],
-  };
-}
-
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type"); // HAJI atau UMROH
+    const type = searchParams.get("type");
     const featured = searchParams.get("featured");
+    const admin = searchParams.get("admin"); // untuk admin dashboard
 
-    const where: any = {
-      isActive: true,
-    };
+    const where: any = {};
+
+    // Jika bukan request dari admin, hanya tampilkan yang aktif
+    if (!admin) {
+      where.isActive = true;
+    }
 
     if (type) {
       where.type = type;
@@ -63,11 +31,51 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(products.map(serializeProduct));
+    return NextResponse.json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
       { error: "Failed to fetch products" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await auth();
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+
+    const product = await prisma.product.create({
+      data: {
+        name: body.name,
+        slug: body.slug,
+        description: body.description,
+        price: body.price,
+        discountPrice: body.discountPrice || null,
+        duration: body.duration,
+        type: body.type,
+        departure: new Date(body.departure),
+        quota: body.quota,
+        quotaFilled: body.quotaFilled || 0,
+        features: body.features,
+        itinerary: body.itinerary,
+        images: body.images,
+        isActive: body.isActive ?? true,
+        isFeatured: body.isFeatured ?? false,
+      },
+    });
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error("Error creating product:", error);
+    return NextResponse.json(
+      { error: "Failed to create product" },
       { status: 500 }
     );
   }
