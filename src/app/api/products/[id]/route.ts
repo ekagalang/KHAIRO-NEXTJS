@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { handleApiError, logError, ApiError } from "@/lib/api-error-handler";
 
 function toNumber(
   value: unknown,
@@ -52,15 +53,12 @@ export async function GET(
     });
 
     if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      throw new ApiError(404, "Produk tidak ditemukan", "NOT_FOUND");
     }
     return NextResponse.json(serializeProduct(product));
   } catch (error) {
-    console.error("Error fetching product:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch product" },
-      { status: 500 }
-    );
+    logError("GET /api/products/[id]", error, { id: (await context.params).id });
+    return handleApiError(error);
   }
 }
 
@@ -71,7 +69,7 @@ export async function PUT(
   try {
     const session = await auth();
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new ApiError(401, "Tidak terautentikasi", "UNAUTHORIZED");
     }
 
     const { id } = await context.params;
@@ -101,11 +99,8 @@ export async function PUT(
 
     return NextResponse.json(serializeProduct(updated));
   } catch (error) {
-    console.error("Error updating product:", error);
-    return NextResponse.json(
-      { error: "Failed to update product" },
-      { status: 500 }
-    );
+    logError("PUT /api/products/[id]", error, { id: (await context.params).id });
+    return handleApiError(error);
   }
 }
 
@@ -116,17 +111,14 @@ export async function DELETE(
   try {
     const session = await auth();
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new ApiError(401, "Tidak terautentikasi", "UNAUTHORIZED");
     }
 
     const { id } = await context.params;
     await prisma.product.delete({ where: { id } });
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: "Produk berhasil dihapus" });
   } catch (error) {
-    console.error("Error deleting product:", error);
-    return NextResponse.json(
-      { error: "Failed to delete product" },
-      { status: 500 }
-    );
+    logError("DELETE /api/products/[id]", error, { id: (await context.params).id });
+    return handleApiError(error);
   }
 }

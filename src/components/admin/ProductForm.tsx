@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
+import { MultipleMediaPicker } from "@/components/admin/MultipleMediaPicker";
 
 interface ProductFormProps {
   product?: Product;
@@ -271,19 +272,12 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="images">URL Gambar *</Label>
-            <Input
-              id="images"
+            <MultipleMediaPicker
+              label="Gambar Produk *"
               value={formData.images}
-              onChange={(e) =>
-                setFormData({ ...formData, images: e.target.value })
-              }
-              placeholder="URL1,URL2,URL3 (pisahkan dengan koma)"
-              required
+              onChange={(urls) => setFormData({ ...formData, images: urls })}
+              maxImages={5}
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Pisahkan multiple URL dengan koma
-            </p>
           </div>
 
           <div className="flex gap-4">

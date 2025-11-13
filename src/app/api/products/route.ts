@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { handleApiError, logError, ApiError } from "@/lib/api-error-handler";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
     const featured = searchParams.get("featured");
-    const admin = searchParams.get("admin"); // untuk admin dashboard
+    const admin = searchParams.get("admin");
 
     const where: any = {};
 
-    // Jika bukan request dari admin, hanya tampilkan yang aktif
     if (!admin) {
       where.isActive = true;
     }
@@ -33,11 +33,8 @@ export async function GET(request: Request) {
 
     return NextResponse.json(products);
   } catch (error) {
-    console.error("Error fetching products:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch products" },
-      { status: 500 }
-    );
+    logError("GET /api/products", error, { searchParams: request.url });
+    return handleApiError(error);
   }
 }
 
@@ -46,10 +43,19 @@ export async function POST(request: Request) {
     const session = await auth();
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new ApiError(401, "Tidak terautentikasi", "UNAUTHORIZED");
     }
 
     const body = await request.json();
+
+    // Validation
+    if (!body.name || !body.slug || !body.price) {
+      throw new ApiError(
+        400,
+        "Field name, slug, dan price wajib diisi",
+        "MISSING_REQUIRED_FIELDS"
+      );
+    }
 
     const product = await prisma.product.create({
       data: {
@@ -71,12 +77,9 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(product);
+    return NextResponse.json(product, { status: 201 });
   } catch (error) {
-    console.error("Error creating product:", error);
-    return NextResponse.json(
-      { error: "Failed to create product" },
-      { status: 500 }
-    );
+    logError("POST /api/products", error);
+    return handleApiError(error);
   }
 }

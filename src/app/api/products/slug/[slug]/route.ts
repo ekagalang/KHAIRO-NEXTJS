@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { handleApiError, logError, ApiError } from "@/lib/api-error-handler";
 
 function toNumber(
   value: unknown,
@@ -50,14 +51,11 @@ export async function GET(
     });
 
     if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      throw new ApiError(404, "Produk tidak ditemukan", "NOT_FOUND");
     }
     return NextResponse.json(serializeProduct(product));
   } catch (error) {
-    console.error("Error fetching product by slug:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch product" },
-      { status: 500 }
-    );
+    logError("GET /api/products/slug/[slug]", error, { slug: (await context.params).slug });
+    return handleApiError(error);
   }
 }

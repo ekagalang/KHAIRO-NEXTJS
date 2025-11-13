@@ -19,6 +19,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { RichTextEditor } from "./RichTextEditor";
 import Image from "next/image";
+import { MediaPicker } from "@/components/admin/MediaPicker";
 
 interface BlogFormProps {
   blog?: Blog;
@@ -192,37 +193,15 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="coverImage">Cover Image URL *</Label>
-            <Input
-              id="coverImage"
-              type="url"
+            <MediaPicker
+              label="Cover Image *"
               value={formData.coverImage}
-              onChange={(e) =>
-                setFormData({ ...formData, coverImage: e.target.value })
-              }
-              placeholder="https://example.com/cover-image.jpg"
-              required
+              onChange={(url) => setFormData({ ...formData, coverImage: url })}
             />
             <p className="text-xs text-gray-500 mt-1">
-              Rekomendasi: 1200x630px untuk optimal social media sharing
+              Pilih gambar dari file manager. Rekomendasi: 1200x630px
             </p>
           </div>
-
-          {/* Image Preview */}
-          {formData.coverImage && (
-            <div>
-              <Label>Preview Cover</Label>
-              <div className="relative w-full h-64 mt-2 rounded-lg overflow-hidden bg-gray-100">
-                <Image
-                  src={formData.coverImage}
-                  alt="Preview"
-                  fill
-                  className="object-cover"
-                  onError={() => toast.error("URL gambar tidak valid")}
-                />
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 

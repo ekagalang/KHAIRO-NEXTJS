@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  Package, 
-  Users, 
-  ImageIcon,  // ← Ganti dari Image jadi ImageIcon
-  FileText, 
-  TrendingUp, 
-  Calendar 
+import {
+  Package,
+  Users,
+  ImageIcon,
+  FileText,
+  TrendingUp,
+  Calendar
 } from 'lucide-react'
+import { VisitorStatsCard } from '@/components/admin/VisitorStatsCard'
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -92,6 +93,9 @@ export default function DashboardPage() {
           Selamat datang di Admin Panel Khairo Tour
         </p>
       </div>
+
+      {/* Visitor Analytics */}
+      <VisitorStatsCard />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

@@ -3,11 +3,15 @@
 import { useEffect, useState, Suspense } from "react";
 import { Product, ProductType } from "@prisma/client";
 import { ProductCard } from "@/components/product/ProductCard";
+import { ProductCardSkeletonGrid } from "@/components/product/ProductCardSkeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, Package } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useDebounce } from "@/hooks/useDebounce";
+import { trackSearch } from "@/lib/analytics";
 
 function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -19,6 +23,9 @@ function ProductsContent() {
   const searchParams = useSearchParams();
   const typeFromUrl = searchParams.get("type") as ProductType | null;
 
+  // Debounce search query
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
   useEffect(() => {
     if (typeFromUrl) {
       setSelectedType(typeFromUrl);
@@ -28,7 +35,11 @@ function ProductsContent() {
 
   useEffect(() => {
     filterProducts();
-  }, [products, searchQuery, selectedType]);
+    // Track search if there's a query
+    if (debouncedSearchQuery) {
+      trackSearch(debouncedSearchQuery);
+    }
+  }, [products, debouncedSearchQuery, selectedType]);
 
   const fetchProducts = async () => {
     try {
@@ -51,12 +62,12 @@ function ProductsContent() {
       filtered = filtered.filter((p) => p.type === selectedType);
     }
 
-    // Filter by search
-    if (searchQuery) {
+    // Filter by search (use debounced value)
+    if (debouncedSearchQuery) {
       filtered = filtered.filter(
         (p) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.description.toLowerCase().includes(searchQuery.toLowerCase())
+          p.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+          p.description.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
       );
     }
 
@@ -134,21 +145,32 @@ function ProductsContent() {
 
           {/* Products Grid */}
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
+            <ProductCardSkeletonGrid count={6} />
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-gray-500 mb-4">Tidak ada paket ditemukan</p>
-              <Button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedType("ALL");
-                }}
-              >
-                Reset Filter
-              </Button>
-            </div>
+            <EmptyState
+              icon={Package}
+              title={
+                searchQuery || selectedType !== "ALL"
+                  ? "Tidak ada paket ditemukan"
+                  : "Belum ada paket tour"
+              }
+              description={
+                searchQuery || selectedType !== "ALL"
+                  ? "Coba ubah filter atau kata kunci pencarian Anda"
+                  : "Paket tour akan segera tersedia"
+              }
+              action={
+                searchQuery || selectedType !== "ALL"
+                  ? {
+                      label: "Reset Filter",
+                      onClick: () => {
+                        setSearchQuery("");
+                        setSelectedType("ALL");
+                      },
+                    }
+                  : undefined
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map((product) => (

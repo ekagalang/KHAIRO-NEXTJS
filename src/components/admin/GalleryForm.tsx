@@ -18,6 +18,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
+import { MediaPicker } from "@/components/admin/MediaPicker";
 
 interface GalleryFormProps {
   gallery?: Gallery;
@@ -123,37 +124,15 @@ export function GalleryForm({ gallery, isEdit = false }: GalleryFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="imageUrl">URL Gambar *</Label>
-            <Input
-              id="imageUrl"
-              type="url"
+            <MediaPicker
+              label="Gambar *"
               value={formData.imageUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, imageUrl: e.target.value })
-              }
-              placeholder="https://example.com/image.jpg"
-              required
+              onChange={(url) => setFormData({ ...formData, imageUrl: url })}
             />
             <p className="text-xs text-gray-500 mt-1">
-              Upload gambar ke hosting (Unsplash, Imgur, dll) dan paste URL-nya
+              Pilih gambar dari file manager atau upload gambar baru
             </p>
           </div>
-
-          {/* Image Preview */}
-          {formData.imageUrl && (
-            <div>
-              <Label>Preview</Label>
-              <div className="relative w-full h-64 mt-2 rounded-lg overflow-hidden bg-gray-100">
-                <Image
-                  src={formData.imageUrl}
-                  alt="Preview"
-                  fill
-                  className="object-cover"
-                  onError={() => toast.error("URL gambar tidak valid")}
-                />
-              </div>
-            </div>
-          )}
 
           <div>
             <label className="flex items-center gap-2">

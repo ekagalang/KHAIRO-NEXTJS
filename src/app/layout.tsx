@@ -4,6 +4,9 @@ import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { VisitorTracker } from "@/components/VisitorTracker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,12 +23,16 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={inter.className}>
-        <AuthProvider>
-          <CartProvider>
-            {children}
-            <Toaster position="top-center" richColors />
-          </CartProvider>
-        </AuthProvider>
+        <GoogleAnalytics />
+        <VisitorTracker />
+        <ErrorBoundary>
+          <AuthProvider>
+            <CartProvider>
+              {children}
+              <Toaster position="top-center" richColors />
+            </CartProvider>
+          </AuthProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

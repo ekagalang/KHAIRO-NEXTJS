@@ -13,6 +13,8 @@ import {
   LogOut,
   Menu,
   X,
+  Home,
+  FolderOpen,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
@@ -47,9 +49,11 @@ export default function AdminLayout({
 
   const menuItems = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/admin/dashboard/homepage", icon: Home, label: "Homepage" },
     { href: "/admin/dashboard/products", icon: Package, label: "Produk" },
     { href: "/admin/dashboard/gallery", icon: Image, label: "Galeri" },
     { href: "/admin/dashboard/blog", icon: FileText, label: "Blog" },
+    { href: "/admin/dashboard/media", icon: FolderOpen, label: "File Manager" },
     { href: "/admin/dashboard/settings", icon: Settings, label: "Pengaturan" },
   ];
 

@@ -12,6 +12,23 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "upload.wikimedia.org" },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/uploads/videos/:path*",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "video/mp4",
+          },
+          {
+            key: "Accept-Ranges",
+            value: "bytes",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

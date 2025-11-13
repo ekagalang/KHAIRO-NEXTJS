@@ -148,6 +148,88 @@ model Setting {
   value       String   @db.Text
   description String?
   updatedAt   DateTime @updatedAt
-  
+
   @@map("settings")
+}
+
+// Model Visitor Stats (Agregasi per hari untuk efisiensi)
+model VisitorStat {
+  id            String   @id @default(cuid())
+  date          DateTime @db.Date // Tanggal (tanpa waktu)
+  pageViews     Int      @default(0) // Total page views
+  uniqueVisitors Int     @default(0) // Unique visitors (based on session)
+  productViews  Int      @default(0) // Product detail views
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([date])
+  @@index([date])
+  @@map("visitor_stats")
+}
+
+// Model Hero Section
+model HeroSection {
+  id            String   @id @default(cuid())
+  title         String   @db.Text
+  subtitle      String   @db.Text
+  description   String?  @db.Text
+  buttonText    String   @default("Lihat Paket")
+  buttonLink    String   @default("/products")
+  imageUrl      String?
+  backgroundUrl String?  // Background image or GIF URL
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("hero_sections")
+}
+
+// Model Why Choose Us
+model WhyChooseUs {
+  id          String   @id @default(cuid())
+  icon        String   // Icon name dari lucide-react
+  title       String
+  description String   @db.Text
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("why_choose_us")
+}
+
+// Model Testimonial
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  role        String   // "Jamaah Umroh 2024", dll
+  content     String   @db.Text
+  rating      Int      @default(5) // 1-5
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+// Model Media untuk File Manager
+model Media {
+  id          String   @id @default(cuid())
+  filename    String   // Original filename
+  filepath    String   @unique // Path in public/uploads
+  filesize    Int      // File size in bytes
+  mimetype    String   // image/jpeg, video/mp4, etc
+  mediaType   String   @default("image") // "image" or "video"
+  width       Int?     // Image/Video width
+  height      Int?     // Image/Video height
+  duration    Int?     // Video duration in seconds
+  alt         String?  // Alt text for SEO
+  title       String?  // Title for the media
+  uploadedBy  String?  // User ID who uploaded
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("media")
 }
