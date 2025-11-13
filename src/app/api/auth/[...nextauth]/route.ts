@@ -1,12 +1,10 @@
 import NextAuth from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-export const {
-  handlers: { GET, POST },
-  auth,
-} = NextAuth({
+export const authOptions: NextAuthConfig = {
   providers: [
     Credentials({
       name: "credentials",
@@ -69,4 +67,9 @@ export const {
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
-});
+};
+
+export const {
+  handlers: { GET, POST },
+  auth,
+} = NextAuth(authOptions);

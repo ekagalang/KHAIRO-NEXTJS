@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Product, ProductType } from "@prisma/client";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Navbar } from "@/components/layout/Navbar";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -159,5 +159,20 @@ export default function ProductsPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }

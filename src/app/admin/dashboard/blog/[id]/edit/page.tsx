@@ -2,37 +2,37 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Product } from "@prisma/client";
-import { ProductForm } from "@/components/admin/ProductForm";
+import { Blog } from "@prisma/client";
+import { BlogForm } from "@/components/admin/BlogForm";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function EditProductPage() {
+export default function EditBlogPage() {
   const params = useParams();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (params.id) {
-      fetchProduct(params.id as string);
+      fetchBlog(params.id as string);
     }
   }, [params.id]);
 
-  const fetchProduct = async (id: string) => {
+  const fetchBlog = async (id: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/products/${id}`);
+      const response = await fetch(`/api/blog/${id}`);
 
       if (!response.ok) {
-        toast.error("Produk tidak ditemukan");
+        toast.error("Artikel tidak ditemukan");
         return;
       }
 
       const data = await response.json();
-      setProduct(data);
+      setBlog(data);
     } catch (error) {
-      console.error("Error fetching product:", error);
-      toast.error("Gagal memuat produk");
+      console.error("Error fetching blog:", error);
+      toast.error("Gagal memuat artikel");
     } finally {
       setLoading(false);
     }
@@ -46,10 +46,10 @@ export default function EditProductPage() {
     );
   }
 
-  if (!product) {
+  if (!blog) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-500">Produk tidak ditemukan</p>
+        <p className="text-gray-500">Artikel tidak ditemukan</p>
       </div>
     );
   }
@@ -58,13 +58,12 @@ export default function EditProductPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
-          Edit Produk
+          Edit Artikel
         </h1>
-        <p className="text-gray-600">Ubah informasi paket tour</p>
+        <p className="text-gray-600">Ubah konten dan informasi artikel</p>
       </div>
 
-      <ProductForm product={product} isEdit />
+      <BlogForm blog={blog} isEdit />
     </div>
   );
 }
-

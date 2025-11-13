@@ -41,10 +41,10 @@ function serializeProduct(p: any) {
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
     const product = await prisma.product.findUnique({
       where: {
         id,
@@ -66,7 +66,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -74,28 +74,29 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = context.params;
+    const { id } = await context.params;
     const body = await request.json();
+
+    const data: any = {};
+    if ("name" in body) data.name = body.name;
+    if ("slug" in body) data.slug = body.slug;
+    if ("description" in body) data.description = body.description;
+    if ("price" in body) data.price = body.price;
+    if ("discountPrice" in body) data.discountPrice = body.discountPrice ?? null;
+    if ("duration" in body) data.duration = body.duration;
+    if ("type" in body) data.type = body.type;
+    if ("departure" in body) data.departure = body.departure ? new Date(body.departure) : undefined;
+    if ("quota" in body) data.quota = body.quota;
+    if ("quotaFilled" in body) data.quotaFilled = body.quotaFilled;
+    if ("features" in body) data.features = body.features;
+    if ("itinerary" in body) data.itinerary = body.itinerary;
+    if ("images" in body) data.images = body.images;
+    if (typeof body.isActive === "boolean") data.isActive = body.isActive;
+    if (typeof body.isFeatured === "boolean") data.isFeatured = body.isFeatured;
 
     const updated = await prisma.product.update({
       where: { id },
-      data: {
-        name: body.name,
-        slug: body.slug,
-        description: body.description,
-        price: body.price,
-        discountPrice: body.discountPrice ?? null,
-        duration: body.duration,
-        type: body.type,
-        departure: body.departure ? new Date(body.departure) : undefined,
-        quota: body.quota,
-        quotaFilled: body.quotaFilled,
-        features: body.features,
-        itinerary: body.itinerary,
-        images: body.images,
-        isActive: body.isActive,
-        isFeatured: body.isFeatured,
-      },
+      data,
     });
 
     return NextResponse.json(serializeProduct(updated));
@@ -110,7 +111,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -118,7 +119,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = context.params;
+    const { id } = await context.params;
     await prisma.product.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {

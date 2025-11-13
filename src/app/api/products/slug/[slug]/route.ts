@@ -41,10 +41,10 @@ function serializeProduct(p: any) {
 
 export async function GET(
   request: NextRequest,
-  context: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = context.params;
+    const { slug } = await context.params;
     const product = await prisma.product.findUnique({
       where: { slug },
     });

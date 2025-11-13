@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Product } from "@prisma/client";
+import { Blog } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Plus,
   Search,
@@ -15,92 +16,92 @@ import {
   Eye,
   EyeOff,
   Loader2,
-  Package,
+  FileText,
+  Calendar,
 } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 
-export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+export default function BlogPage() {
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [filteredBlogs, setFilteredBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProducts();
+    fetchBlogs();
   }, []);
 
   useEffect(() => {
-    const filtered = products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.type.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = blogs.filter(
+      (b) =>
+        b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredProducts(filtered);
-  }, [searchQuery, products]);
+    setFilteredBlogs(filtered);
+  }, [searchQuery, blogs]);
 
-  const fetchProducts = async () => {
+  const fetchBlogs = async () => {
     try {
       setLoading(true);
-      // Tambahkan ?admin=true untuk ambil semua produk
-      const response = await fetch("/api/products?admin=true");
+      const response = await fetch("/api/blog?admin=true");
       const data = await response.json();
-      setProducts(data);
-      setFilteredProducts(data);
+      setBlogs(data);
+      setFilteredBlogs(data);
     } catch (error) {
-      console.error("Error fetching products:", error);
-      toast.error("Gagal memuat produk");
+      console.error("Error fetching blogs:", error);
+      toast.error("Gagal memuat blog");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
+    if (!confirm("Apakah Anda yakin ingin menghapus artikel ini?")) {
       return;
     }
 
     try {
       setDeleteLoading(id);
-      const response = await fetch(`/api/products/${id}`, {
+      const response = await fetch(`/api/blog/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
 
       if (response.ok) {
-        toast.success("Produk berhasil dihapus");
-        fetchProducts();
+        toast.success("Artikel berhasil dihapus");
+        fetchBlogs();
       } else {
-        toast.error("Gagal menghapus produk");
+        toast.error("Gagal menghapus artikel");
       }
     } catch (error) {
-      console.error("Error deleting product:", error);
+      console.error("Error deleting blog:", error);
       toast.error("Terjadi kesalahan");
     } finally {
       setDeleteLoading(null);
     }
   };
 
-  const handleToggleActive = async (product: Product) => {
+  const handleTogglePublish = async (blog: Blog) => {
     try {
-      const response = await fetch(`/api/products/${product.id}`, {
+      const response = await fetch(`/api/blog/${blog.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ isActive: !product.isActive }),
+        body: JSON.stringify({ isPublished: !blog.isPublished }),
       });
 
       if (response.ok) {
         toast.success(
-          product.isActive ? "Produk dinonaktifkan" : "Produk diaktifkan"
+          blog.isPublished ? "Artikel di-unpublish" : "Artikel dipublish"
         );
-        fetchProducts();
+        fetchBlogs();
       } else {
         toast.error("Gagal mengubah status");
       }
     } catch (error) {
-      console.error("Error toggling active:", error);
+      console.error("Error toggling publish:", error);
       toast.error("Terjadi kesalahan");
     }
   };
@@ -111,29 +112,29 @@ export default function ProductsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
-            Kelola Produk
+            Kelola Blog
           </h1>
-          <p className="text-gray-600">Manajemen paket tour haji dan umroh</p>
+          <p className="text-gray-600">Manajemen artikel dan konten blog</p>
         </div>
         <Button
           className="bg-primary hover:bg-primary/90 text-gray-800 font-semibold"
           asChild
         >
-          <Link href="/admin/dashboard/products/new">
+          <Link href="/admin/dashboard/blog/new">
             <Plus className="w-4 h-4 mr-2" />
-            Tambah Produk
+            Tulis Artikel
           </Link>
         </Button>
       </div>
 
-      {/* Search & Filter */}
+      {/* Search */}
       <Card>
         <CardContent className="pt-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               type="text"
-              placeholder="Cari produk..."
+              placeholder="Cari artikel..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -142,42 +143,43 @@ export default function ProductsPage() {
         </CardContent>
       </Card>
 
-      {/* Products List */}
+      {/* Blog List */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
-      ) : filteredProducts.length === 0 ? (
+      ) : filteredBlogs.length === 0 ? (
         <Card>
           <CardContent className="py-20 text-center">
-            <Package className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+            <FileText className="w-16 h-16 mx-auto mb-4 text-gray-300" />
             <p className="text-gray-500 mb-4">
-              {searchQuery ? "Tidak ada produk ditemukan" : "Belum ada produk"}
+              {searchQuery
+                ? "Tidak ada artikel ditemukan"
+                : "Belum ada artikel"}
             </p>
             <Button asChild>
-              <Link href="/admin/dashboard/products/new">
-                Tambah Produk Pertama
+              <Link href="/admin/dashboard/blog/new">
+                Tulis Artikel Pertama
               </Link>
             </Button>
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {filteredProducts.map((product) => (
+          {filteredBlogs.map((blog) => (
             <Card
-              key={product.id}
+              key={blog.id}
               className="overflow-hidden hover:shadow-lg transition-shadow"
             >
               <CardContent className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row gap-4">
-                  {/* Image */}
-                  <div className="relative w-full sm:w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                    <img
-                      src={
-                        product.images.split(",")[0] || "/placeholder-tour.jpg"
-                      }
-                      alt={product.name}
-                      className="w-full h-full object-cover"
+                  {/* Cover Image */}
+                  <div className="relative w-full sm:w-48 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                    <Image
+                      src={blog.coverImage}
+                      alt={blog.title}
+                      fill
+                      className="object-cover"
                     />
                   </div>
 
@@ -185,51 +187,35 @@ export default function ProductsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-lg mb-1 line-clamp-1">
-                          {product.name}
+                        <h3 className="font-bold text-lg mb-1 line-clamp-2">
+                          {blog.title}
                         </h3>
                         <div className="flex flex-wrap gap-2 mb-2">
+                          <Badge variant="outline">{blog.category}</Badge>
                           <Badge
-                            variant={
-                              product.type === "HAJI" ? "default" : "secondary"
-                            }
+                            variant={blog.isPublished ? "default" : "secondary"}
                           >
-                            {product.type}
+                            {blog.isPublished ? "Published" : "Draft"}
                           </Badge>
-                          <Badge
-                            variant={product.isActive ? "default" : "secondary"}
-                          >
-                            {product.isActive ? "Aktif" : "Nonaktif"}
-                          </Badge>
-                          {product.isFeatured && (
-                            <Badge className="bg-yellow-500">Featured</Badge>
-                          )}
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-primary">
-                          {formatCurrency(
-                            Number(product.discountPrice || product.price)
-                          )}
-                        </p>
-                        {product.discountPrice && (
-                          <p className="text-sm text-gray-500 line-through">
-                            {formatCurrency(Number(product.price))}
-                          </p>
-                        )}
                       </div>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
+                    {blog.excerpt && (
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {blog.excerpt}
+                      </p>
+                    )}
 
-                    <div className="flex flex-wrap gap-4 text-xs text-gray-500 mb-4">
-                      <span>📅 {product.duration}</span>
-                      <span>🛫 {formatDate(product.departure)}</span>
-                      <span>
-                        👥 {product.quotaFilled}/{product.quota}
+                    <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-4">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {blog.publishedAt
+                          ? formatDate(blog.publishedAt)
+                          : "Belum dipublish"}
                       </span>
+                      <span>Penulis: {blog.author}</span>
+                      <span>Slug: /{blog.slug}</span>
                     </div>
 
                     {/* Actions */}
@@ -237,36 +223,42 @@ export default function ProductsPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleToggleActive(product)}
+                        onClick={() => handleTogglePublish(blog)}
                       >
-                        {product.isActive ? (
+                        {blog.isPublished ? (
                           <>
                             <EyeOff className="w-4 h-4 mr-1" />
-                            Nonaktifkan
+                            Unpublish
                           </>
                         ) : (
                           <>
                             <Eye className="w-4 h-4 mr-1" />
-                            Aktifkan
+                            Publish
                           </>
                         )}
                       </Button>
                       <Button variant="outline" size="sm" asChild>
-                        <Link
-                          href={`/admin/dashboard/products/${product.id}/edit`}
-                        >
+                        <Link href={`/admin/dashboard/blog/${blog.id}/edit`}>
                           <Edit className="w-4 h-4 mr-1" />
                           Edit
                         </Link>
                       </Button>
+                      {blog.isPublished && (
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/blog/${blog.slug}`} target="_blank">
+                            <Eye className="w-4 h-4 mr-1" />
+                            Lihat
+                          </Link>
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
                         className="text-red-600 hover:bg-red-50"
-                        onClick={() => handleDelete(product.id)}
-                        disabled={deleteLoading === product.id}
+                        onClick={() => handleDelete(blog.id)}
+                        disabled={deleteLoading === blog.id}
                       >
-                        {deleteLoading === product.id ? (
+                        {deleteLoading === blog.id ? (
                           <Loader2 className="w-4 h-4 mr-1 animate-spin" />
                         ) : (
                           <Trash2 className="w-4 h-4 mr-1" />
