@@ -1,33 +1,47 @@
 @import "tailwindcss";
 
 @theme {
-  /* Primary Color - Mint Green */
-  --color-primary-50: #f0fff0;
-  --color-primary-100: #e0ffe0;
-  --color-primary-200: #c1ffc1;
-  --color-primary-300: #a2ffa2;
-  --color-primary-400: #98ff98;
-  --color-primary-500: #7fff7f;
-  --color-primary-600: #66ff66;
-  --color-primary-700: #4dff4d;
-  --color-primary-800: #33ff33;
-  --color-primary-900: #1aff1a;
-  --color-primary: #98ff98;
-  --color-primary-foreground: #1a4d1a;
+  /* Islamic Green - Primary Color */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-primary-900: #064e3b;
+  --color-primary: #059669;
+  --color-primary-foreground: #ffffff;
 
-  /* Secondary Color - Sky Blue */
+  /* Soft Sky Blue - Secondary Color */
   --color-secondary-50: #f0f9ff;
   --color-secondary-100: #e0f2fe;
   --color-secondary-200: #bae6fd;
-  --color-secondary-300: #a7d8f0;
-  --color-secondary-400: #87ceeb;
-  --color-secondary-500: #67b4d6;
-  --color-secondary-600: #479ac1;
-  --color-secondary-700: #3a7fa3;
-  --color-secondary-800: #2d6485;
-  --color-secondary-900: #204967;
-  --color-secondary: #87ceeb;
+  --color-secondary-300: #7dd3fc;
+  --color-secondary-400: #38bdf8;
+  --color-secondary-500: #0ea5e9;
+  --color-secondary-600: #0284c7;
+  --color-secondary-700: #0369a1;
+  --color-secondary-800: #075985;
+  --color-secondary-900: #0c4a6e;
+  --color-secondary: #0ea5e9;
   --color-secondary-foreground: #ffffff;
+
+  /* Gold Accent */
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+  --color-accent: #f59e0b;
+  --color-accent-foreground: #ffffff;
 
   /* Base Colors */
   --color-background: #ffffff;
@@ -45,10 +59,6 @@
   --color-muted: #f1f5f9;
   --color-muted-foreground: #64748b;
 
-  /* Accent */
-  --color-accent: #f1f5f9;
-  --color-accent-foreground: #0a0a0a;
-
   /* Destructive */
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
@@ -56,47 +66,70 @@
   /* Border & Input */
   --color-border: #e2e8f0;
   --color-input: #e2e8f0;
-  --color-ring: #98ff98;
+  --color-ring: #059669;
 
   /* Radius */
-  --radius-sm: 0.25rem;
-  --radius: 0.5rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-}
+  --radius-sm: 0.5rem;
+  --radius: 0.75rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 
-/* Dark mode - optional */
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: #0a0a0a;
-    --color-foreground: #fafafa;
-    --color-card: #0a0a0a;
-    --color-card-foreground: #fafafa;
-    --color-popover: #0a0a0a;
-    --color-popover-foreground: #fafafa;
-    --color-muted: #1e293b;
-    --color-muted-foreground: #94a3b8;
-    --color-accent: #1e293b;
-    --color-accent-foreground: #fafafa;
-    --color-border: #1e293b;
-    --color-input: #1e293b;
-  }
+  /* Custom Shadows */
+  --shadow-soft: 0 2px 15px -3px rgb(0 0 0 / 0.07),
+    0 10px 20px -2px rgb(0 0 0 / 0.04);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px 0 rgb(0 0 0 / 0.06);
 }
 
 /* Base styles */
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
+* {
+  border-color: var(--color-border);
 }
 
-/* Prose styles for Tiptap editor */
+body {
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0%,
+    rgba(236, 253, 245, 0.2) 50%,
+    #ffffff 100%
+  );
+  color: var(--color-foreground);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #059669;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #047857;
+}
+
+/* Selection Color */
+::selection {
+  background-color: #a7f3d0;
+  color: #064e3b;
+}
+
+/* Prose styles for Blog Content */
 .prose {
   color: #374151;
   max-width: 65ch;
@@ -108,6 +141,7 @@
   line-height: 1.1111111;
   margin-top: 0;
   margin-bottom: 0.8888889em;
+  color: #064e3b;
 }
 
 .prose h2 {
@@ -116,6 +150,7 @@
   line-height: 1.3333333;
   margin-top: 2em;
   margin-bottom: 1em;
+  color: #065f46;
 }
 
 .prose h3 {
@@ -124,11 +159,13 @@
   line-height: 1.6;
   margin-top: 1.6em;
   margin-bottom: 0.6em;
+  color: #047857;
 }
 
 .prose p {
   margin-top: 1.25em;
   margin-bottom: 1.25em;
+  color: #374151;
 }
 
 .prose ul {
@@ -152,20 +189,24 @@
 
 .prose blockquote {
   font-style: italic;
-  border-left: 4px solid #e5e7eb;
-  padding-left: 1em;
+  border-left: 4px solid #34d399;
+  background-color: #ecfdf5;
+  padding: 1em 1.5em;
   margin: 1.6em 0;
-  color: #6b7280;
+  color: #065f46;
+  border-radius: 0.5rem;
 }
 
 .prose a {
-  color: #98ff98;
-  text-decoration: underline;
-  font-weight: 500;
+  color: #059669;
+  text-decoration: none;
+  border-bottom: 2px solid #d1fae5;
+  transition: all 0.2s;
 }
 
 .prose a:hover {
-  color: #7fff7f;
+  color: #047857;
+  border-bottom-color: #34d399;
 }
 
 .prose strong {
@@ -179,6 +220,7 @@
 
 .prose code {
   background-color: #f3f4f6;
+  color: #047857;
   padding: 0.2em 0.4em;
   border-radius: 0.25rem;
   font-size: 0.875em;
@@ -197,6 +239,41 @@
 .prose img {
   max-width: 100%;
   height: auto;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   margin: 2em 0;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2em 0;
+}
+
+.prose th {
+  background-color: #ecfdf5;
+  color: #064e3b;
+  font-weight: 600;
+  padding: 0.75em;
+  border: 1px solid #d1fae5;
+}
+
+.prose td {
+  padding: 0.75em;
+  border: 1px solid #e5e7eb;
+}
+
+/* Responsive Text */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 0.95rem;
+  }
+
+  .prose h1 {
+    font-size: 1.75em;
+  }
+
+  .prose h2 {
+    font-size: 1.35em;
+  }
 }
