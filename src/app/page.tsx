@@ -26,6 +26,7 @@ import * as Icons from "lucide-react";
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [hero, setHero] = useState<any>(null);
+  const [heroStats, setHeroStats] = useState<any[]>([]);
   const [whyChooseUs, setWhyChooseUs] = useState<any[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [galleries, setGalleries] = useState<any[]>([]);
@@ -34,6 +35,7 @@ export default function HomePage() {
   useEffect(() => {
     fetchFeaturedProducts();
     fetchHero();
+    fetchHeroStats();
     fetchWhyChooseUs();
     fetchTestimonials();
     fetchGalleries();
@@ -59,6 +61,18 @@ export default function HomePage() {
       setHero(data);
     } catch (error) {
       console.error("Error fetching hero:", error);
+    }
+  };
+
+  const fetchHeroStats = async () => {
+    try {
+      const response = await fetch("/api/admin/hero-stats");
+      const data = await response.json();
+      if (data.success) {
+        setHeroStats(data.data.filter((stat: any) => stat.isActive));
+      }
+    } catch (error) {
+      console.error("Error fetching hero stats:", error);
     }
   };
 
@@ -197,7 +211,7 @@ export default function HomePage() {
                   {hero.description}
                 </p>
               )}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Link href={hero?.buttonLink || "/products"}>
                   <Button
                     size="lg"
@@ -208,6 +222,33 @@ export default function HomePage() {
                   </Button>
                 </Link>
               </div>
+
+              {/* Hero Stats - Dynamic dari CMS */}
+              {heroStats.length > 0 && (
+                <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+                  {heroStats.map((stat, index) => {
+                    const IconComponent = stat.icon ? getIcon(stat.icon) : null;
+                    return (
+                      <div key={stat.id} className="text-center">
+                        {IconComponent && (
+                          <div className="flex justify-center mb-2">
+                            <IconComponent className={`w-6 h-6 ${hero?.backgroundUrl ? "text-white drop-shadow-lg" : "text-primary"}`} />
+                          </div>
+                        )}
+                        <p className={`text-3xl sm:text-4xl font-bold ${hero?.backgroundUrl ? "text-white drop-shadow-2xl" : "text-gray-800"}`}>
+                          {stat.value}
+                          {stat.suffix && (
+                            <span className="text-lg ml-1">{stat.suffix}</span>
+                          )}
+                        </p>
+                        <p className={`text-sm mt-1 ${hero?.backgroundUrl ? "text-gray-100 drop-shadow-lg" : "text-gray-600"}`}>
+                          {stat.label}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </section>

@@ -184,6 +184,21 @@ model HeroSection {
   @@map("hero_sections")
 }
 
+// Model Hero Stats
+model HeroStat {
+  id          String   @id @default(cuid())
+  label       String   // "Pengalaman", "Jamaah", "Kepuasan"
+  value       String   // "10+", "5000+", "100%"
+  suffix      String?  // "Tahun", "Jamaah", dll
+  icon        String?  // Icon name dari lucide-react
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("hero_stats")
+}
+
 // Model Why Choose Us
 model WhyChooseUs {
   id          String   @id @default(cuid())

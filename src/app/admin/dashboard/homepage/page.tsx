@@ -221,7 +221,7 @@ export default function HomepageEditor() {
           <CardTitle>Hero Section</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <Label>Judul</Label>
             <Input
               value={heroForm.title}
@@ -229,7 +229,7 @@ export default function HomepageEditor() {
               placeholder="Umroh & Haji Terpercaya"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label>Subtitle</Label>
             <Input
               value={heroForm.subtitle}
@@ -237,7 +237,7 @@ export default function HomepageEditor() {
               placeholder="Berangkat Bersama Khairo Tour"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label>Deskripsi</Label>
             <Textarea
               value={heroForm.description}
@@ -247,14 +247,14 @@ export default function HomepageEditor() {
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="space-y-2">
               <Label>Teks Tombol</Label>
               <Input
                 value={heroForm.buttonText}
                 onChange={(e) => setHeroForm({ ...heroForm, buttonText: e.target.value })}
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label>Link Tombol</Label>
               <Input
                 value={heroForm.buttonLink}
@@ -262,13 +262,13 @@ export default function HomepageEditor() {
               />
             </div>
           </div>
-          <div>
+          <div className="space-y-3">
             <MediaPicker
               label="Background Image/GIF (optional)"
               value={heroForm.backgroundUrl || ""}
               onChange={(url) => setHeroForm({ ...heroForm, backgroundUrl: url })}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 leading-relaxed">
               Upload atau pilih gambar/GIF untuk background hero section
             </p>
           </div>
@@ -293,14 +293,14 @@ export default function HomepageEditor() {
             <Card className="bg-gray-50">
               <CardContent className="pt-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label>Icon</Label>
                     <IconPicker
                       value={whyForm.icon}
                       onChange={(iconName) => setWhyForm({ ...whyForm, icon: iconName })}
                     />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label>Urutan</Label>
                     <Input
                       type="number"
@@ -309,14 +309,14 @@ export default function HomepageEditor() {
                     />
                   </div>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Judul</Label>
                   <Input
                     value={whyForm.title}
                     onChange={(e) => setWhyForm({ ...whyForm, title: e.target.value })}
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Deskripsi</Label>
                   <Textarea
                     value={whyForm.description}
@@ -384,14 +384,14 @@ export default function HomepageEditor() {
             <Card className="bg-gray-50">
               <CardContent className="pt-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label>Nama</Label>
                     <Input
                       value={testimonialForm.name}
                       onChange={(e) => setTestimonialForm({ ...testimonialForm, name: e.target.value })}
                     />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label>Role/Status</Label>
                     <Input
                       value={testimonialForm.role}
@@ -400,7 +400,7 @@ export default function HomepageEditor() {
                     />
                   </div>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Testimoni</Label>
                   <Textarea
                     value={testimonialForm.content}
@@ -409,7 +409,7 @@ export default function HomepageEditor() {
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label>Rating (1-5)</Label>
                     <Input
                       type="number"
@@ -419,7 +419,7 @@ export default function HomepageEditor() {
                       onChange={(e) => setTestimonialForm({ ...testimonialForm, rating: parseInt(e.target.value) })}
                     />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label>Urutan</Label>
                     <Input
                       type="number"

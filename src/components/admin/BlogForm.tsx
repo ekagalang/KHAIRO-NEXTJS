@@ -105,7 +105,7 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
           <CardTitle>Informasi Artikel</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="title">Judul Artikel * (SEO: 60 karakter)</Label>
             <Input
               id="title"
@@ -115,13 +115,13 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
               required
               maxLength={100}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 leading-relaxed mt-3">
               {formData.title.length}/100 karakter - Optimal: 50-60 karakter
               untuk SEO
             </p>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="slug">URL Slug * (SEO Friendly)</Label>
             <Input
               id="slug"
@@ -132,12 +132,12 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
               placeholder="10-tips-persiapan-umroh-pertama-kali"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 leading-relaxed mt-3">
               URL: /blog/{formData.slug}
             </p>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="excerpt">
               Meta Description (SEO: 160 karakter)
             </Label>
@@ -151,13 +151,13 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
               rows={3}
               maxLength={160}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 leading-relaxed mt-3">
               {formData.excerpt.length}/160 karakter - Optimal: 150-160 karakter
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          <div className="space-y-2">
               <Label htmlFor="category">Kategori *</Label>
               <Select
                 value={formData.category}
@@ -178,7 +178,7 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
               </Select>
             </div>
 
-            <div>
+          <div className="space-y-2">
               <Label htmlFor="author">Penulis *</Label>
               <Input
                 id="author"
@@ -198,7 +198,7 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
               value={formData.coverImage}
               onChange={(url) => setFormData({ ...formData, coverImage: url })}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 leading-relaxed mt-3">
               Pilih gambar dari file manager. Rekomendasi: 1200x630px
             </p>
           </div>
@@ -216,7 +216,7 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
             onChange={(content) => setFormData({ ...formData, content })}
             placeholder="Tulis konten artikel di sini..."
           />
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-500 leading-relaxed mt-3">
             💡 Tips SEO: Gunakan heading (H2, H3), tambahkan internal link, dan
             gunakan keyword secara natural
           </p>
@@ -312,7 +312,7 @@ export function BlogForm({ blog, isEdit = false }: BlogFormProps) {
             </span>
           </label>
           {!formData.isPublished && (
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 leading-relaxed mt-3">
               Artikel akan disimpan sebagai draft
             </p>
           )}

@@ -195,7 +195,7 @@ export function VisitorStatsCard() {
               <p className="text-2xl font-bold">
                 {formatNumber(stats.totals.pageViews)}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 leading-relaxed mt-3">
                 Rata-rata: {formatNumber(stats.totals.averagePerDay.pageViews)}/hari
               </p>
             </div>
@@ -204,7 +204,7 @@ export function VisitorStatsCard() {
               <p className="text-2xl font-bold">
                 {formatNumber(stats.totals.uniqueVisitors)}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 leading-relaxed mt-3">
                 Rata-rata: {formatNumber(stats.totals.averagePerDay.uniqueVisitors)}/hari
               </p>
             </div>
@@ -213,7 +213,7 @@ export function VisitorStatsCard() {
               <p className="text-2xl font-bold">
                 {formatNumber(stats.totals.productViews)}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 leading-relaxed mt-3">
                 Rata-rata: {formatNumber(stats.totals.averagePerDay.productViews)}/hari
               </p>
             </div>

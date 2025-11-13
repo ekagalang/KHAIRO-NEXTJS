@@ -190,7 +190,7 @@ export default function MediaManager() {
               )}
               Upload Media
             </Button>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 leading-relaxed mt-3">
               Gambar: max 5MB (JPG, PNG, GIF, WebP) • Video: max 50MB (MP4, WebM, OGG)
             </p>
           </div>

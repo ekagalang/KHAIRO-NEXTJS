@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { MediaPicker } from "@/components/admin/MediaPicker";
+import Image from "next/image";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -19,6 +21,9 @@ export default function SettingsPage() {
     site_email: "",
     site_phone: "",
     whatsapp_number: "",
+    site_logo: "",
+    site_logo_admin: "",
+    site_favicon: "",
   });
 
   useEffect(() => {
@@ -36,6 +41,9 @@ export default function SettingsPage() {
         site_email: data.site_email || "",
         site_phone: data.site_phone || "",
         whatsapp_number: data.whatsapp_number || "",
+        site_logo: data.site_logo || "",
+        site_logo_admin: data.site_logo_admin || "",
+        site_favicon: data.site_favicon || "",
       });
     } catch (error) {
       console.error("Error fetching settings:", error);
@@ -96,7 +104,7 @@ export default function SettingsPage() {
             <CardTitle>Informasi Umum</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="site_name">Nama Website</Label>
               <Input
                 id="site_name"
@@ -108,7 +116,7 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="site_description">Deskripsi Website</Label>
               <Textarea
                 id="site_description"
@@ -129,7 +137,7 @@ export default function SettingsPage() {
             <CardTitle>Informasi Kontak</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="site_email">Email</Label>
               <Input
                 id="site_email"
@@ -142,7 +150,7 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="site_phone">Nomor Telepon</Label>
               <Input
                 id="site_phone"
@@ -154,18 +162,106 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div>
-              <Label htmlFor="whatsapp_number">Nomor WhatsApp</Label>
-              <Input
-                id="whatsapp_number"
-                value={settings.whatsapp_number}
-                onChange={(e) =>
-                  setSettings({ ...settings, whatsapp_number: e.target.value })
-                }
-                placeholder="6281234567890"
-              />
-              <p className="text-xs text-gray-500 mt-1">
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp_number">Nomor WhatsApp</Label>
+                <Input
+                  id="whatsapp_number"
+                  value={settings.whatsapp_number}
+                  onChange={(e) =>
+                    setSettings({ ...settings, whatsapp_number: e.target.value })
+                  }
+                  placeholder="6281234567890"
+                />
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed">
                 Format: 62xxx (tanpa tanda +, untuk fitur checkout)
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Logo & Branding */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Logo & Branding</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Logo Homepage */}
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label>Logo Homepage</Label>
+                <MediaPicker
+                  value={settings.site_logo}
+                  onChange={(url) => setSettings({ ...settings, site_logo: url })}
+                  accept="image/*"
+                />
+              </div>
+              {settings.site_logo && (
+                <div className="relative w-48 h-16 border rounded-lg overflow-hidden bg-white p-2">
+                  <Image
+                    src={settings.site_logo}
+                    alt="Logo Homepage"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Logo yang ditampilkan di navbar homepage (Rekomendasi: PNG transparan, max 200x60px)
+              </p>
+            </div>
+
+            {/* Logo Admin */}
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label>Logo Admin/CMS</Label>
+                <MediaPicker
+                  value={settings.site_logo_admin}
+                  onChange={(url) => setSettings({ ...settings, site_logo_admin: url })}
+                  accept="image/*"
+                />
+              </div>
+              {settings.site_logo_admin && (
+                <div className="relative w-48 h-16 border rounded-lg overflow-hidden bg-white p-2">
+                  <Image
+                    src={settings.site_logo_admin}
+                    alt="Logo Admin"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Logo yang ditampilkan di sidebar admin (Rekomendasi: PNG transparan, max 200x60px)
+              </p>
+            </div>
+
+            {/* Favicon */}
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label>Favicon</Label>
+                <MediaPicker
+                  value={settings.site_favicon}
+                  onChange={(url) => setSettings({ ...settings, site_favicon: url })}
+                  accept="image/*"
+                />
+              </div>
+              {settings.site_favicon && (
+                <div className="flex items-center gap-3">
+                  <div className="relative w-8 h-8 border rounded overflow-hidden bg-white">
+                    <Image
+                      src={settings.site_favicon}
+                      alt="Favicon"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-sm text-gray-600">Preview favicon (32x32px)</span>
+                </div>
+              )}
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Icon yang muncul di tab browser (Rekomendasi: PNG/ICO, 32x32px atau 64x64px)
               </p>
             </div>
           </CardContent>

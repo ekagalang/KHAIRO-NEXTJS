@@ -4,7 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-export const authOptions: NextAuthConfig = {
+const authOptions: NextAuthConfig = {
   providers: [
     Credentials({
       name: "credentials",
@@ -13,32 +13,37 @@ export const authOptions: NextAuthConfig = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const email = (credentials as any)?.email;
-        const password = (credentials as any)?.password;
+        try {
+          const email = (credentials as any)?.email;
+          const password = (credentials as any)?.password;
 
-        if (!email || !password) {
-          throw new Error("Email dan password harus diisi");
+          if (!email || !password) {
+            return null;
+          }
+
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
+
+          if (!user || !user.password) {
+            return null;
+          }
+
+          const isPasswordValid = await bcrypt.compare(password, user.password);
+          if (!isPasswordValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          } as any;
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
         }
-
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
-
-        if (!user || !user.password) {
-          throw new Error("Email atau password salah");
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-          throw new Error("Email atau password salah");
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        } as any;
       },
     }),
   ],
@@ -66,10 +71,9 @@ export const authOptions: NextAuthConfig = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
+  debug: true,
+  trustHost: true,
 };
 
-export const {
-  handlers: { GET, POST },
-  auth,
-} = NextAuth(authOptions);
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
+export const { GET, POST } = handlers;

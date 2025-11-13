@@ -13,7 +13,10 @@
       "Bash(dir:*)",
       "Bash(npx prisma studio --port 5555)",
       "Bash(curl:*)",
-      "Bash(ffprobe:*)"
+      "Bash(ffprobe:*)",
+      "Bash(npm run prisma:seed:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

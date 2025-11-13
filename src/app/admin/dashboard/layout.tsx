@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import NextImage from "next/image";
 import {
   LayoutDashboard,
   Package,
@@ -15,6 +16,7 @@ import {
   X,
   Home,
   FolderOpen,
+  BarChart3,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
@@ -28,12 +30,29 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [logoAdmin, setLogoAdmin] = useState("");
+  const [siteName, setSiteName] = useState("Khairo Tour");
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/admin/login");
     }
   }, [status, router]);
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch("/api/settings");
+      const data = await response.json();
+      if (data.site_logo_admin) setLogoAdmin(data.site_logo_admin);
+      if (data.site_name) setSiteName(data.site_name);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+    }
+  };
 
   if (status === "loading") {
     return (
@@ -50,6 +69,7 @@ export default function AdminLayout({
   const menuItems = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/admin/dashboard/homepage", icon: Home, label: "Homepage" },
+    { href: "/admin/dashboard/hero-stats", icon: BarChart3, label: "Hero Stats" },
     { href: "/admin/dashboard/products", icon: Package, label: "Produk" },
     { href: "/admin/dashboard/gallery", icon: Image, label: "Galeri" },
     { href: "/admin/dashboard/blog", icon: FileText, label: "Blog" },
@@ -67,10 +87,24 @@ export default function AdminLayout({
       <div className="lg:hidden bg-white border-b sticky top-0 z-50">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-              <span className="text-lg">🕌</span>
-            </div>
-            <span className="font-bold">Admin Panel</span>
+            {logoAdmin ? (
+              <div className="relative h-8 w-auto">
+                <NextImage
+                  src={logoAdmin}
+                  alt={siteName}
+                  width={120}
+                  height={32}
+                  className="object-contain h-8 w-auto"
+                />
+              </div>
+            ) : (
+              <>
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                  <span className="text-lg">🕌</span>
+                </div>
+                <span className="font-bold">Admin Panel</span>
+              </>
+            )}
           </div>
           <Button
             variant="ghost"
@@ -94,15 +128,27 @@ export default function AdminLayout({
           <div className="flex flex-col h-full">
             {/* Logo */}
             <div className="p-6 border-b hidden lg:block">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">🕌</span>
+              {logoAdmin ? (
+                <div className="relative h-12 w-auto">
+                  <NextImage
+                    src={logoAdmin}
+                    alt={siteName}
+                    width={150}
+                    height={48}
+                    className="object-contain h-12 w-auto"
+                  />
                 </div>
-                <div>
-                  <h1 className="font-bold text-lg">Khairo Tour</h1>
-                  <p className="text-xs text-gray-500">Admin Panel</p>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">🕌</span>
+                  </div>
+                  <div>
+                    <h1 className="font-bold text-lg">{siteName}</h1>
+                    <p className="text-xs text-gray-500">Admin Panel</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Navigation */}

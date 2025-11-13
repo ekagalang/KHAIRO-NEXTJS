@@ -76,7 +76,7 @@ export function GalleryForm({ gallery, isEdit = false }: GalleryFormProps) {
           <CardTitle>Informasi Foto</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="title">Judul/Caption *</Label>
             <Input
               id="title"
@@ -89,7 +89,7 @@ export function GalleryForm({ gallery, isEdit = false }: GalleryFormProps) {
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="description">Deskripsi (Opsional)</Label>
             <Textarea
               id="description"
@@ -102,7 +102,7 @@ export function GalleryForm({ gallery, isEdit = false }: GalleryFormProps) {
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="category">Kategori *</Label>
             <Select
               value={formData.category}
@@ -129,7 +129,7 @@ export function GalleryForm({ gallery, isEdit = false }: GalleryFormProps) {
               value={formData.imageUrl}
               onChange={(url) => setFormData({ ...formData, imageUrl: url })}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 leading-relaxed mt-3">
               Pilih gambar dari file manager atau upload gambar baru
             </p>
           </div>

@@ -236,7 +236,7 @@ export function MediaPicker({ value, onChange, label }: MediaPickerProps) {
                   )}
                   Upload Media Baru
                 </Button>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 leading-relaxed mt-3">
                   Gambar (max 5MB) atau Video (max 50MB)
                 </p>
               </div>

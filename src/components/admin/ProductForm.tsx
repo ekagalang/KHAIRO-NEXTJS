@@ -138,7 +138,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="name">Nama Paket *</Label>
               <Input
                 id="name"
@@ -149,7 +149,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
                 required
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="slug">Slug (URL)</Label>
               <Input
                 id="slug"
@@ -162,7 +162,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="description">Deskripsi *</Label>
             <Textarea
               id="description"
@@ -176,7 +176,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="type">Tipe *</Label>
               <Select
                 value={formData.type}
@@ -193,7 +193,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="duration">Durasi *</Label>
               <Input
                 id="duration"
@@ -208,7 +208,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="price">Harga Normal (Rp) *</Label>
               <Input
                 id="price"
@@ -220,7 +220,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
                 required
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="discountPrice">Harga Diskon (Rp)</Label>
               <Input
                 id="discountPrice"
@@ -231,7 +231,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
                 }
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="departure">Keberangkatan *</Label>
               <Input
                 id="departure"
@@ -246,7 +246,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="quota">Kuota *</Label>
               <Input
                 id="quota"
@@ -258,7 +258,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
                 required
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="quotaFilled">Kuota Terisi</Label>
               <Input
                 id="quotaFilled"
@@ -271,7 +271,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <MultipleMediaPicker
               label="Gambar Produk *"
               value={formData.images}

@@ -5,13 +5,31 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import Image from "next/image";
 
 export function Navbar() {
   const { totalItems } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [siteLogo, setSiteLogo] = useState("");
+  const [siteName, setSiteName] = useState("Khairo Tour");
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch("/api/settings");
+      const data = await response.json();
+      if (data.site_logo) setSiteLogo(data.site_logo);
+      if (data.site_name) setSiteName(data.site_name);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+    }
+  };
 
   const navLinks = [
     { href: "/", label: "Beranda" },
@@ -28,15 +46,30 @@ export function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                <span className="text-2xl">🕌</span>
-              </div>
-              <div className="hidden sm:block">
-                <span className="font-bold text-xl text-gray-800">
-                  Khairo Tour
-                </span>
-                <p className="text-xs text-gray-500">Haji & Umroh</p>
-              </div>
+              {siteLogo ? (
+                <div className="relative h-12 w-auto">
+                  <Image
+                    src={siteLogo}
+                    alt={siteName}
+                    width={150}
+                    height={48}
+                    className="object-contain h-12 w-auto"
+                    priority
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">🕌</span>
+                  </div>
+                  <div className="hidden sm:block">
+                    <span className="font-bold text-xl text-gray-800">
+                      {siteName}
+                    </span>
+                    <p className="text-xs text-gray-500">Haji & Umroh</p>
+                  </div>
+                </>
+              )}
             </Link>
 
             {/* Desktop Navigation */}
