@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     if (!isVideo) {
       // For images, get dimensions
       try {
-        const dimensions = sizeOf(filepath);
+        const dimensions = sizeOf(buffer);
         width = dimensions.width;
         height = dimensions.height;
       } catch (error) {
