@@ -16,7 +16,8 @@
       "Bash(ffprobe:*)",
       "Bash(npm run prisma:seed:*)",
       "Bash(cat:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

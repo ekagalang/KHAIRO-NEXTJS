@@ -22,8 +22,7 @@ export const productSchema = z.object({
 
   price: z
     .number({
-      required_error: "Harga wajib diisi",
-      invalid_type_error: "Harga harus berupa angka",
+      message: "Harga harus berupa angka",
     })
     .positive("Harga harus lebih dari 0")
     .or(z.string().regex(/^\d+$/).transform(Number)),
@@ -41,7 +40,7 @@ export const productSchema = z.object({
     .max(100, "Durasi maksimal 100 karakter"),
 
   type: z.enum(["Umroh", "Haji", "Wisata Religi", "Tour Domestik"], {
-    required_error: "Tipe produk wajib dipilih",
+    message: "Tipe produk wajib dipilih",
   }),
 
   departure: z
@@ -51,8 +50,7 @@ export const productSchema = z.object({
 
   quota: z
     .number({
-      required_error: "Kuota wajib diisi",
-      invalid_type_error: "Kuota harus berupa angka",
+      message: "Kuota harus berupa angka",
     })
     .int("Kuota harus berupa bilangan bulat")
     .nonnegative("Kuota tidak boleh negatif")
