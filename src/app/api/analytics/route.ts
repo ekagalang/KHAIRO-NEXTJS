@@ -52,11 +52,11 @@ export async function GET(request: Request) {
     });
 
     // Get nearly full products (80%+)
-    const nearlyFullProducts = await prisma.product.findMany({
+    const allActiveProducts = await prisma.product.findMany({
       where: {
         isActive: true,
-        quotaFilled: {
-          gte: prisma.raw(`quota * 0.8`),
+        quota: {
+          gt: 0,
         },
       },
       select: {
@@ -67,6 +67,11 @@ export async function GET(request: Request) {
         quotaFilled: true,
       },
     });
+
+    // Filter products that are 80% or more filled
+    const nearlyFullProducts = allActiveProducts.filter(
+      (product) => product.quotaFilled >= product.quota * 0.8
+    );
 
     return NextResponse.json({
       summary: {
