@@ -194,7 +194,6 @@ export default function SettingsPage() {
                 <MediaPicker
                   value={settings.site_logo}
                   onChange={(url) => setSettings({ ...settings, site_logo: url })}
-                  accept="image/*"
                 />
               </div>
               {settings.site_logo && (
@@ -219,7 +218,6 @@ export default function SettingsPage() {
                 <MediaPicker
                   value={settings.site_logo_admin}
                   onChange={(url) => setSettings({ ...settings, site_logo_admin: url })}
-                  accept="image/*"
                 />
               </div>
               {settings.site_logo_admin && (
@@ -244,7 +242,6 @@ export default function SettingsPage() {
                 <MediaPicker
                   value={settings.site_favicon}
                   onChange={(url) => setSettings({ ...settings, site_favicon: url })}
-                  accept="image/*"
                 />
               </div>
               {settings.site_favicon && (

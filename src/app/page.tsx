@@ -31,6 +31,7 @@ export default function HomePage() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [galleries, setGalleries] = useState<any[]>([]);
   const [blogs, setBlogs] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>({});
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -40,7 +41,18 @@ export default function HomePage() {
     fetchTestimonials();
     fetchGalleries();
     fetchBlogs();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch("/api/settings");
+      const data = await response.json();
+      setSettings(data);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+    }
+  };
 
   const fetchFeaturedProducts = async () => {
     try {
@@ -613,7 +625,7 @@ export default function HomePage() {
                 asChild
               >
                 <a
-                  href="https://wa.me/6281234567890"
+                  href={`https://wa.me/${settings.whatsapp_number || '6281234567890'}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -658,13 +670,12 @@ export default function HomePage() {
                     <span className="text-2xl">🕌</span>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Khairo Tour</h3>
+                    <h3 className="font-bold text-lg">{settings.site_name || "Khairo Tour"}</h3>
                     <p className="text-sm text-gray-400">Haji & Umroh</p>
                   </div>
                 </div>
                 <p className="text-gray-400 text-sm">
-                  Melayani perjalanan ibadah haji dan umroh dengan penuh amanah
-                  dan profesional.
+                  {settings.site_description || "Melayani perjalanan ibadah haji dan umroh dengan penuh amanah dan profesional."}
                 </p>
               </div>
 
@@ -711,14 +722,18 @@ export default function HomePage() {
               <div>
                 <h4 className="font-bold mb-4">Hubungi Kami</h4>
                 <ul className="space-y-3 text-sm">
-                  <li className="flex items-start gap-2">
-                    <Phone className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
-                    <span className="text-gray-400">+62 812-3456-7890</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Mail className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
-                    <span className="text-gray-400">info@khairotour.com</span>
-                  </li>
+                  {settings.site_phone && (
+                    <li className="flex items-start gap-2">
+                      <Phone className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
+                      <span className="text-gray-400">{settings.site_phone}</span>
+                    </li>
+                  )}
+                  {settings.site_email && (
+                    <li className="flex items-start gap-2">
+                      <Mail className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
+                      <span className="text-gray-400">{settings.site_email}</span>
+                    </li>
+                  )}
                   <li className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
                     <span className="text-gray-400">
@@ -733,7 +748,7 @@ export default function HomePage() {
 
             {/* Copyright */}
             <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-              <p>&copy; 2024 Khairo Tour. All rights reserved.</p>
+              <p>&copy; 2024 {settings.site_name || "Khairo Tour"}. All rights reserved.</p>
             </div>
           </div>
         </footer>
