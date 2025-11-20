@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Product } from "@prisma/client";
 import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { ProductCard } from "@/components/product/ProductCard";
+import FloatingSocialButtons from "@/components/layout/FloatingSocialButtons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel } from "@/components/ui/carousel";
@@ -18,6 +20,8 @@ import {
   Phone,
   Mail,
   MapPin,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -27,6 +31,11 @@ export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [hero, setHero] = useState<any>(null);
   const [heroStats, setHeroStats] = useState<any[]>([]);
+  const [partners, setPartners] = useState<any[]>([]);
+  const [partnerSection, setPartnerSection] = useState<any>({
+    title: "Rekanan Kami",
+    description: "Dipercaya oleh partner terbaik",
+  });
   const [whyChooseUs, setWhyChooseUs] = useState<any[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [galleries, setGalleries] = useState<any[]>([]);
@@ -37,6 +46,8 @@ export default function HomePage() {
     fetchFeaturedProducts();
     fetchHero();
     fetchHeroStats();
+    fetchPartners();
+    fetchPartnerSection();
     fetchWhyChooseUs();
     fetchTestimonials();
     fetchGalleries();
@@ -85,6 +96,26 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error("Error fetching hero stats:", error);
+    }
+  };
+
+  const fetchPartners = async () => {
+    try {
+      const response = await fetch("/api/partners");
+      const data = await response.json();
+      setPartners(data);
+    } catch (error) {
+      console.error("Error fetching partners:", error);
+    }
+  };
+
+  const fetchPartnerSection = async () => {
+    try {
+      const response = await fetch("/api/partner-section");
+      const data = await response.json();
+      setPartnerSection(data);
+    } catch (error) {
+      console.error("Error fetching partner section:", error);
     }
   };
 
@@ -171,6 +202,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
+      <FloatingSocialButtons />
 
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
         {/* Hero Section - Dynamic dari CMS */}
@@ -178,7 +210,10 @@ export default function HomePage() {
           {/* Background Image/Video */}
           {hero?.backgroundUrl && (
             <>
-              {hero.backgroundUrl.includes('/videos/') || hero.backgroundUrl.endsWith('.mp4') || hero.backgroundUrl.endsWith('.webm') || hero.backgroundUrl.endsWith('.ogg') ? (
+              {hero.backgroundUrl.includes("/videos/") ||
+              hero.backgroundUrl.endsWith(".mp4") ||
+              hero.backgroundUrl.endsWith(".webm") ||
+              hero.backgroundUrl.endsWith(".ogg") ? (
                 <div className="absolute inset-0 z-0">
                   <video
                     autoPlay
@@ -189,7 +224,10 @@ export default function HomePage() {
                     preload="auto"
                   >
                     <source
-                      src={hero.backgroundUrl.replace('/uploads/videos/', '/api/video/')}
+                      src={hero.backgroundUrl.replace(
+                        "/uploads/videos/",
+                        "/api/video/"
+                      )}
                       type="video/mp4"
                     />
                     Your browser does not support the video tag.
@@ -209,30 +247,127 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10 z-20"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-30">
             <div className="text-center max-w-3xl mx-auto">
-              <div className="mb-6 inline-block">
-                <span className="text-6xl">🕌</span>
-              </div>
-              <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold mb-6 ${hero?.backgroundUrl ? "text-white drop-shadow-2xl" : "text-gray-800"}`}>
+              <h1
+                className={`text-4xl sm:text-5xl md:text-6xl font-bold mb-6 ${
+                  hero?.backgroundUrl
+                    ? "text-white drop-shadow-2xl"
+                    : "text-gray-800"
+                }`}
+              >
                 {hero?.title || "Wujudkan Impian Haji & Umroh Anda"}
               </h1>
-              <p className={`text-lg sm:text-xl mb-4 ${hero?.backgroundUrl ? "text-white drop-shadow-2xl" : "text-gray-700"}`}>
+              <p
+                className={`text-lg sm:text-xl mb-4 ${
+                  hero?.backgroundUrl
+                    ? "text-white drop-shadow-2xl"
+                    : "text-gray-700"
+                }`}
+              >
                 {hero?.subtitle || "Berangkat Bersama Khairo Tour"}
               </p>
               {hero?.description && (
-                <p className={`text-base mb-8 ${hero?.backgroundUrl ? "text-gray-100 drop-shadow-2xl" : "text-gray-600"}`}>
+                <p
+                  className={`text-base mb-8 ${
+                    hero?.backgroundUrl
+                      ? "text-gray-100 drop-shadow-2xl"
+                      : "text-gray-600"
+                  }`}
+                >
                   {hero.description}
                 </p>
               )}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Link href={hero?.buttonLink || "/products"}>
-                  <Button
-                    size="lg"
-                    className="bg-gray-800 hover:bg-gray-900 text-white font-semibold shadow-xl w-full sm:w-auto"
-                  >
-                    {hero?.buttonText || "Lihat Paket"}
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
+                {/* Render Multiple Buttons dari CMS */}
+                {hero?.buttons && hero.buttons.length > 0 ? (
+                  hero.buttons.map((button: any) => {
+                    const ButtonIcon = button.icon
+                      ? getIcon(button.icon)
+                      : null;
+                    const getButtonClass = () => {
+                      if (
+                        button.variant === "custom" &&
+                        button.bgColor &&
+                        button.textColor
+                      ) {
+                        return "";
+                      }
+                      switch (button.variant) {
+                        case "primary":
+                          return "bg-gray-800 hover:bg-gray-900 text-white";
+                        case "secondary":
+                          return "bg-white hover:bg-gray-100 text-gray-800 border-2 border-gray-200";
+                        case "outline":
+                          return "border-2 border-gray-800 bg-transparent hover:bg-gray-800 text-gray-800 hover:text-white";
+                        default:
+                          return "bg-gray-800 hover:bg-gray-900 text-white";
+                      }
+                    };
+
+                    const customStyle =
+                      button.variant === "custom" &&
+                      button.bgColor &&
+                      button.textColor
+                        ? {
+                            backgroundColor: button.bgColor,
+                            color: button.textColor,
+                          }
+                        : {};
+
+                    // Check if external link (starts with http/https)
+                    const isExternalLink =
+                      button.link.startsWith("http://") ||
+                      button.link.startsWith("https://");
+
+                    return isExternalLink ? (
+                      <a
+                        key={button.id}
+                        href={button.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button
+                          size="lg"
+                          className={`font-semibold shadow-xl w-full sm:w-auto ${getButtonClass()}`}
+                          style={customStyle}
+                        >
+                          {button.text}
+                          {ButtonIcon && (
+                            <ButtonIcon className="ml-2 w-5 h-5" />
+                          )}
+                          {!ButtonIcon && (
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                          )}
+                        </Button>
+                      </a>
+                    ) : (
+                      <Link key={button.id} href={button.link}>
+                        <Button
+                          size="lg"
+                          className={`font-semibold shadow-xl w-full sm:w-auto ${getButtonClass()}`}
+                          style={customStyle}
+                        >
+                          {button.text}
+                          {ButtonIcon && (
+                            <ButtonIcon className="ml-2 w-5 h-5" />
+                          )}
+                          {!ButtonIcon && (
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                          )}
+                        </Button>
+                      </Link>
+                    );
+                  })
+                ) : (
+                  <Link href={hero?.buttonLink || "/products"}>
+                    <Button
+                      size="lg"
+                      className="bg-gray-800 hover:bg-gray-900 text-white font-semibold shadow-xl w-full sm:w-auto"
+                    >
+                      {hero?.buttonText || "Lihat Paket"}
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </Link>
+                )}
               </div>
 
               {/* Hero Stats - Dynamic dari CMS */}
@@ -244,16 +379,34 @@ export default function HomePage() {
                       <div key={stat.id} className="text-center">
                         {IconComponent && (
                           <div className="flex justify-center mb-2">
-                            <IconComponent className={`w-6 h-6 ${hero?.backgroundUrl ? "text-white drop-shadow-lg" : "text-primary"}`} />
+                            <IconComponent
+                              className={`w-6 h-6 ${
+                                hero?.backgroundUrl
+                                  ? "text-white drop-shadow-lg"
+                                  : "text-primary"
+                              }`}
+                            />
                           </div>
                         )}
-                        <p className={`text-3xl sm:text-4xl font-bold ${hero?.backgroundUrl ? "text-white drop-shadow-2xl" : "text-gray-800"}`}>
+                        <p
+                          className={`text-3xl sm:text-4xl font-bold ${
+                            hero?.backgroundUrl
+                              ? "text-white drop-shadow-2xl"
+                              : "text-gray-800"
+                          }`}
+                        >
                           {stat.value}
                           {stat.suffix && (
                             <span className="text-lg ml-1">{stat.suffix}</span>
                           )}
                         </p>
-                        <p className={`text-sm mt-1 ${hero?.backgroundUrl ? "text-gray-100 drop-shadow-lg" : "text-gray-600"}`}>
+                        <p
+                          className={`text-sm mt-1 ${
+                            hero?.backgroundUrl
+                              ? "text-gray-100 drop-shadow-lg"
+                              : "text-gray-600"
+                          }`}
+                        >
                           {stat.label}
                         </p>
                       </div>
@@ -264,6 +417,15 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Partners Section - Logo Rekanan */}
+        {partners.length > 0 && partnerSection.isActive !== false && (
+          <PartnerCarousel
+            partners={partners}
+            title={partnerSection.title}
+            description={partnerSection.description}
+          />
+        )}
 
         {/* Why Choose Us - Dynamic dari CMS */}
         <section className="py-16 sm:py-20">
@@ -384,7 +546,10 @@ export default function HomePage() {
 
                 <div className="text-center">
                   <Link href="/gallery">
-                    <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100">
+                    <Button
+                      size="lg"
+                      className="bg-white text-gray-900 hover:bg-gray-100"
+                    >
                       Lihat Semua Galeri
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
@@ -469,7 +634,9 @@ export default function HomePage() {
                         <p className="font-semibold text-gray-800 text-sm">
                           {testimonial.name}
                         </p>
-                        <p className="text-xs text-gray-500">{testimonial.role}</p>
+                        <p className="text-xs text-gray-500">
+                          {testimonial.role}
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -520,7 +687,15 @@ export default function HomePage() {
                               Artikel Unggulan
                             </span>
                             <span>•</span>
-                            <span>{new Date(blogs[0].publishedAt || blogs[0].createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
+                            <span>
+                              {new Date(
+                                blogs[0].publishedAt || blogs[0].createdAt
+                              ).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })}
+                            </span>
                           </div>
                           <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3 group-hover:text-primary transition-colors">
                             {blogs[0].title}
@@ -559,7 +734,13 @@ export default function HomePage() {
                           </div>
                           <CardContent className="p-4">
                             <p className="text-xs text-gray-500 mb-2">
-                              {new Date(blog.publishedAt || blog.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                              {new Date(
+                                blog.publishedAt || blog.createdAt
+                              ).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
                             </p>
                             <h3 className="font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                               {blog.title}
@@ -625,7 +806,9 @@ export default function HomePage() {
                 asChild
               >
                 <a
-                  href={`https://wa.me/${settings.whatsapp_number || '6281234567890'}`}
+                  href={`https://wa.me/${
+                    settings.whatsapp_number || "6281234567890"
+                  }`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -634,125 +817,215 @@ export default function HomePage() {
                 </a>
               </Button>
             </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-12 max-w-2xl mx-auto">
-              <div className="text-center">
-                <p className="text-3xl sm:text-4xl font-bold text-gray-800">
-                  10+
-                </p>
-                <p className="text-sm text-gray-600 mt-1">Tahun Pengalaman</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl sm:text-4xl font-bold text-gray-800">
-                  5000+
-                </p>
-                <p className="text-sm text-gray-600 mt-1">Jamaah Terlayani</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl sm:text-4xl font-bold text-gray-800">
-                  100%
-                </p>
-                <p className="text-sm text-gray-600 mt-1">Kepuasan</p>
-              </div>
-            </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-white py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-              {/* Company Info */}
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">🕌</span>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">{settings.site_name || "Khairo Tour"}</h3>
-                    <p className="text-sm text-gray-400">Haji & Umroh</p>
-                  </div>
-                </div>
-                <p className="text-gray-400 text-sm">
-                  {settings.site_description || "Melayani perjalanan ibadah haji dan umroh dengan penuh amanah dan profesional."}
-                </p>
-              </div>
-
-              {/* Quick Links */}
-              <div>
-                <h4 className="font-bold mb-4">Tautan Cepat</h4>
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <Link
-                      href="/products?type=UMROH"
-                      className="text-gray-400 hover:text-primary transition-colors"
-                    >
-                      Paket Umroh
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/products?type=HAJI"
-                      className="text-gray-400 hover:text-primary transition-colors"
-                    >
-                      Paket Haji
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/gallery"
-                      className="text-gray-400 hover:text-primary transition-colors"
-                    >
-                      Galeri
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/blog"
-                      className="text-gray-400 hover:text-primary transition-colors"
-                    >
-                      Blog & Artikel
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Contact */}
-              <div>
-                <h4 className="font-bold mb-4">Hubungi Kami</h4>
-                <ul className="space-y-3 text-sm">
-                  {settings.site_phone && (
-                    <li className="flex items-start gap-2">
-                      <Phone className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
-                      <span className="text-gray-400">{settings.site_phone}</span>
-                    </li>
-                  )}
-                  {settings.site_email && (
-                    <li className="flex items-start gap-2">
-                      <Mail className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
-                      <span className="text-gray-400">{settings.site_email}</span>
-                    </li>
-                  )}
-                  <li className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
-                    <span className="text-gray-400">
-                      Jl. Contoh No. 123
-                      <br />
-                      Jakarta, Indonesia
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Copyright */}
-            <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-              <p>&copy; 2024 {settings.site_name || "Khairo Tour"}. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
+}
+
+// Partner Carousel Component
+function PartnerCarousel({
+  partners,
+  title,
+  description,
+}: {
+  partners: any[];
+  title: string;
+  description: string;
+}) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const itemsPerPage = 3;
+
+  // Clone partners for infinite loop
+  const extendedPartners = [...partners, ...partners, ...partners];
+  const startIndex = partners.length; // Start from middle clone set
+
+  // Initialize to middle position
+  useEffect(() => {
+    setCurrentIndex(startIndex);
+  }, [startIndex]);
+
+  // Auto-play carousel - shift by 1 item at a time
+  useEffect(() => {
+    if (!isAutoPlaying || partners.length <= itemsPerPage) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => prev + 1);
+    }, 3000); // Change slide every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, partners.length, itemsPerPage]);
+
+  // Handle infinite loop - reset position when reaching clones
+  useEffect(() => {
+    if (currentIndex >= startIndex + partners.length) {
+      // Reached end of middle clone, jump to start of middle clone
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(startIndex);
+      }, 500); // Wait for transition to complete
+
+      setTimeout(() => {
+        setIsTransitioning(true);
+      }, 550);
+    } else if (currentIndex < startIndex && currentIndex !== 0) {
+      // Going backwards past middle clone start
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(startIndex + partners.length - 1);
+      }, 500);
+
+      setTimeout(() => {
+        setIsTransitioning(true);
+      }, 550);
+    }
+  }, [currentIndex, startIndex, partners.length]);
+
+  const handlePrev = () => {
+    setIsAutoPlaying(false);
+    setCurrentIndex((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+    setIsAutoPlaying(false);
+    setCurrentIndex((prev) => prev + 1);
+  };
+
+  // If less than or equal to itemsPerPage, show all without carousel
+  if (partners.length <= itemsPerPage) {
+    return (
+      <section className="py-20 bg-white border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">{title}</h2>
+            <p className="text-gray-600 text-lg">{description}</p>
+          </div>
+
+          <div className="flex justify-center items-center gap-16 md:gap-20 lg:gap-24">
+            {partners.map((partner) => (
+              <PartnerLogo key={partner.id} partner={partner} />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Calculate item width - show 3 items at a time
+  const getTranslateValue = () => {
+    // Each item takes 1/3 of container width plus gap
+    return currentIndex * (100 / itemsPerPage);
+  };
+
+  // Calculate active dot based on position in original partners array
+  const getActiveDot = () => {
+    return (currentIndex - startIndex + partners.length) % partners.length;
+  };
+
+  return (
+    <section className="py-20 bg-white border-y border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-800 mb-4">{title}</h2>
+          <p className="text-gray-600 text-lg">{description}</p>
+        </div>
+
+        <div className="relative">
+          {/* Carousel Container */}
+          <div className="overflow-hidden">
+            <div
+              className={`flex ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
+              style={{
+                transform: `translateX(-${getTranslateValue()}%)`,
+                gap: "4rem", // 64px gap between items
+              }}
+            >
+              {extendedPartners.map((partner, index) => (
+                <div
+                  key={`${partner.id}-${index}`}
+                  className="flex-shrink-0 flex justify-center"
+                  style={{
+                    width: `calc((100% - ${(itemsPerPage - 1) * 4}rem) / ${itemsPerPage})`,
+                  }}
+                >
+                  <PartnerLogo partner={partner} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Buttons */}
+          <button
+            onClick={handlePrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition-colors z-10"
+            aria-label="Previous"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-800" />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition-colors z-10"
+            aria-label="Next"
+          >
+            <ChevronRight className="w-6 h-6 text-gray-800" />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center gap-2 mt-8">
+            {partners.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setIsAutoPlaying(false);
+                  setCurrentIndex(startIndex + index);
+                }}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  index === getActiveDot()
+                    ? "bg-primary w-8"
+                    : "bg-gray-300 hover:bg-gray-400"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Partner Logo Component
+function PartnerLogo({ partner }: { partner: any }) {
+  const logoContent = (
+    <div className="relative h-28 md:h-36 lg:h-40 w-auto min-w-[180px] md:min-w-[240px] lg:min-w-[280px] flex items-center justify-center">
+      <Image
+        src={partner.logoUrl}
+        alt={partner.name}
+        width={350}
+        height={175}
+        className="object-contain h-28 md:h-36 lg:h-40 w-auto max-w-[280px] md:max-w-[350px] lg:max-w-[400px] transition-all duration-300 hover:scale-110 grayscale hover:grayscale-0 opacity-80 hover:opacity-100"
+      />
+    </div>
+  );
+
+  if (partner.websiteUrl) {
+    return (
+      <a
+        href={partner.websiteUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block"
+      >
+        {logoContent}
+      </a>
+    );
+  }
+
+  return logoContent;
 }

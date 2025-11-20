@@ -10,6 +10,8 @@ import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import Image from "next/image";
+import { ProductTypesSection } from "@/components/admin/ProductTypesSection";
+import { FooterSection } from "@/components/admin/FooterSection";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,11 @@ export default function SettingsPage() {
     site_logo: "",
     site_logo_admin: "",
     site_favicon: "",
+    footer_about: "",
+    footer_links: "",
+    footer_social_media: "",
+    footer_address: "",
+    footer_copyright: "",
   });
 
   useEffect(() => {
@@ -44,6 +51,11 @@ export default function SettingsPage() {
         site_logo: data.site_logo || "",
         site_logo_admin: data.site_logo_admin || "",
         site_favicon: data.site_favicon || "",
+        footer_about: data.footer_about || "",
+        footer_links: data.footer_links || "[]",
+        footer_social_media: data.footer_social_media || "[]",
+        footer_address: data.footer_address || "",
+        footer_copyright: data.footer_copyright || "",
       });
     } catch (error) {
       console.error("Error fetching settings:", error);
@@ -96,6 +108,9 @@ export default function SettingsPage() {
           Kelola informasi dan konfigurasi website
         </p>
       </div>
+
+      {/* Product Types Management - Outside of form */}
+      <ProductTypesSection />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* General Settings */}
@@ -169,7 +184,10 @@ export default function SettingsPage() {
                   id="whatsapp_number"
                   value={settings.whatsapp_number}
                   onChange={(e) =>
-                    setSettings({ ...settings, whatsapp_number: e.target.value })
+                    setSettings({
+                      ...settings,
+                      whatsapp_number: e.target.value,
+                    })
                   }
                   placeholder="6281234567890"
                 />
@@ -193,7 +211,9 @@ export default function SettingsPage() {
                 <Label>Logo Homepage</Label>
                 <MediaPicker
                   value={settings.site_logo}
-                  onChange={(url) => setSettings({ ...settings, site_logo: url })}
+                  onChange={(url) =>
+                    setSettings({ ...settings, site_logo: url })
+                  }
                 />
               </div>
               {settings.site_logo && (
@@ -207,7 +227,8 @@ export default function SettingsPage() {
                 </div>
               )}
               <p className="text-xs text-gray-500 leading-relaxed">
-                Logo yang ditampilkan di navbar homepage (Rekomendasi: PNG transparan, max 200x60px)
+                Logo yang ditampilkan di navbar homepage (Rekomendasi: PNG
+                transparan, max 200x60px)
               </p>
             </div>
 
@@ -217,7 +238,9 @@ export default function SettingsPage() {
                 <Label>Logo Admin/CMS</Label>
                 <MediaPicker
                   value={settings.site_logo_admin}
-                  onChange={(url) => setSettings({ ...settings, site_logo_admin: url })}
+                  onChange={(url) =>
+                    setSettings({ ...settings, site_logo_admin: url })
+                  }
                 />
               </div>
               {settings.site_logo_admin && (
@@ -231,7 +254,8 @@ export default function SettingsPage() {
                 </div>
               )}
               <p className="text-xs text-gray-500 leading-relaxed">
-                Logo yang ditampilkan di sidebar admin (Rekomendasi: PNG transparan, max 200x60px)
+                Logo yang ditampilkan di sidebar admin (Rekomendasi: PNG
+                transparan, max 200x60px)
               </p>
             </div>
 
@@ -241,7 +265,9 @@ export default function SettingsPage() {
                 <Label>Favicon</Label>
                 <MediaPicker
                   value={settings.site_favicon}
-                  onChange={(url) => setSettings({ ...settings, site_favicon: url })}
+                  onChange={(url) =>
+                    setSettings({ ...settings, site_favicon: url })
+                  }
                 />
               </div>
               {settings.site_favicon && (
@@ -254,15 +280,28 @@ export default function SettingsPage() {
                       className="object-contain"
                     />
                   </div>
-                  <span className="text-sm text-gray-600">Preview favicon (32x32px)</span>
+                  <span className="text-sm text-gray-600">
+                    Preview favicon (32x32px)
+                  </span>
                 </div>
               )}
               <p className="text-xs text-gray-500 leading-relaxed">
-                Icon yang muncul di tab browser (Rekomendasi: PNG/ICO, 32x32px atau 64x64px)
+                Icon yang muncul di tab browser (Rekomendasi: PNG/ICO, 32x32px
+                atau 64x64px)
               </p>
             </div>
           </CardContent>
         </Card>
+
+        {/* Footer Settings */}
+        <FooterSection
+          footerAbout={settings.footer_about}
+          footerLinks={settings.footer_links}
+          footerSocialMedia={settings.footer_social_media}
+          footerAddress={settings.footer_address}
+          footerCopyright={settings.footer_copyright}
+          onChange={(key, value) => setSettings({ ...settings, [key]: value })}
+        />
 
         {/* Save Button */}
         <div className="flex gap-3">

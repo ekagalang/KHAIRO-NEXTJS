@@ -61,6 +61,49 @@ async function main() {
         value: "",
         description: "Favicon website (icon di browser tab)",
       },
+      {
+        key: "footer_about",
+        value:
+          "Melayani perjalanan ibadah haji dan umroh dengan penuh amanah dan profesional.",
+        description: "Teks about di footer",
+      },
+      {
+        key: "footer_links",
+        value: JSON.stringify([
+          { label: "Paket Umroh", href: "/products?type=UMROH", order: 1 },
+          { label: "Paket Haji", href: "/products?type=HAJI", order: 2 },
+          { label: "Galeri", href: "/gallery", order: 3 },
+          { label: "Blog & Artikel", href: "/blog", order: 4 },
+        ]),
+        description: "Footer links dalam format JSON array",
+      },
+      {
+        key: "footer_social_media",
+        value: JSON.stringify([
+          {
+            platform: "Facebook",
+            url: "https://facebook.com",
+            icon: "Facebook",
+          },
+          {
+            platform: "Instagram",
+            url: "https://instagram.com",
+            icon: "Instagram",
+          },
+          { platform: "Youtube", url: "https://youtube.com", icon: "Youtube" },
+        ]),
+        description: "Social media links dalam format JSON array",
+      },
+      {
+        key: "footer_address",
+        value: "Jl. Contoh No. 123\nJakarta, Indonesia",
+        description: "Alamat kantor untuk footer",
+      },
+      {
+        key: "footer_copyright",
+        value: "2024 Khairo Tour. All rights reserved.",
+        description: "Custom copyright text",
+      },
     ],
     skipDuplicates: true,
   });
@@ -97,6 +140,34 @@ async function main() {
       ],
     });
     console.log("Hero stats created");
+  }
+
+  // Buat product types default
+  const existingTypes = await prisma.productType.count();
+  if (existingTypes === 0) {
+    await prisma.productType.createMany({
+      data: [
+        {
+          name: "Haji",
+          slug: "HAJI",
+          description: "Paket perjalanan ibadah haji ke tanah suci",
+          icon: "Plane",
+          color: "#10b981",
+          isActive: true,
+          order: 1,
+        },
+        {
+          name: "Umroh",
+          slug: "UMROH",
+          description: "Paket perjalanan umroh sepanjang tahun",
+          icon: "Home",
+          color: "#3b82f6",
+          isActive: true,
+          order: 2,
+        },
+      ],
+    });
+    console.log("Product types created");
   }
 
   console.log({ admin });

@@ -59,9 +59,6 @@ export function Navbar() {
                 </div>
               ) : (
                 <>
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">🕌</span>
-                  </div>
                   <div className="hidden sm:block">
                     <span className="font-bold text-xl text-gray-800">
                       {siteName}

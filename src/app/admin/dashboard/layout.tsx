@@ -1,6 +1,6 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
@@ -19,6 +19,9 @@ import {
   Home,
   FolderOpen,
   BarChart3,
+  Handshake,
+  Share2,
+  MousePointerClick,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
@@ -71,7 +74,7 @@ export default function AdminLayout({
   const menuItems = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/admin/dashboard/homepage", icon: Home, label: "Homepage" },
-    { href: "/admin/dashboard/hero-stats", icon: BarChart3, label: "Hero Stats" },
+    { href: "/admin/dashboard/social-media", icon: Share2, label: "Social Media" },
     { href: "/admin/dashboard/products", icon: Package, label: "Produk" },
     { href: "/admin/dashboard/gallery", icon: Image, label: "Galeri" },
     { href: "/admin/dashboard/blog", icon: FileText, label: "Blog" },
@@ -101,9 +104,6 @@ export default function AdminLayout({
               </div>
             ) : (
               <>
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                  <span className="text-lg">🕌</span>
-                </div>
                 <span className="font-bold">Admin Panel</span>
               </>
             )}
@@ -142,9 +142,6 @@ export default function AdminLayout({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">🕌</span>
-                  </div>
                   <div>
                     <h1 className="font-bold text-lg">{siteName}</h1>
                     <p className="text-xs text-gray-500">Admin Panel</p>

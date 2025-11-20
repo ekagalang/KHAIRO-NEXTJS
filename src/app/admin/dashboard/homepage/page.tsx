@@ -10,6 +10,9 @@ import { toast } from "sonner";
 import { Loader2, Plus, Edit, Trash2, Star } from "lucide-react";
 import { IconPicker } from "@/components/admin/IconPicker";
 import { MediaPicker } from "@/components/admin/MediaPicker";
+import { HeroButtonsSection } from "@/components/admin/HeroButtonsSection";
+import { HeroStatsSection } from "@/components/admin/HeroStatsSection";
+import { PartnersSection } from "@/components/admin/PartnersSection";
 
 export default function HomepageEditor() {
   const [loading, setLoading] = useState(true);
@@ -94,12 +97,20 @@ export default function HomepageEditor() {
       });
 
       if (response.ok) {
+        const savedHero = await response.json();
+        console.log('Hero saved:', savedHero);
         toast.success("Hero section berhasil disimpan");
-        fetchData();
+
+        // Update heroForm dengan data yang baru disimpan
+        setHero(savedHero);
+        setHeroForm(savedHero);
+
+        await fetchData();
       } else {
         toast.error("Gagal menyimpan hero section");
       }
     } catch (error) {
+      console.error('Error saving hero:', error);
       toast.error("Terjadi kesalahan");
     } finally {
       setSaving(false);
@@ -246,22 +257,6 @@ export default function HomepageEditor() {
               rows={3}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Teks Tombol</Label>
-              <Input
-                value={heroForm.buttonText}
-                onChange={(e) => setHeroForm({ ...heroForm, buttonText: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Link Tombol</Label>
-              <Input
-                value={heroForm.buttonLink}
-                onChange={(e) => setHeroForm({ ...heroForm, buttonLink: e.target.value })}
-              />
-            </div>
-          </div>
           <div className="space-y-3">
             <MediaPicker
               label="Background Image/GIF (optional)"
@@ -278,6 +273,29 @@ export default function HomepageEditor() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Hero Buttons - Kelola Tombol */}
+      {heroForm.id ? (
+        <>
+          <div className="text-xs text-gray-500 mb-2">Hero ID: {heroForm.id}</div>
+          <HeroButtonsSection heroSectionId={heroForm.id} />
+        </>
+      ) : (
+        <Card className="border-2 border-orange-200 bg-orange-50">
+          <CardHeader>
+            <CardTitle className="text-orange-800">⚠️ Tombol Hero Section</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-orange-700 mb-4">
+              Simpan Hero Section terlebih dahulu untuk mengelola tombol call-to-action.
+            </p>
+            <p className="text-sm text-orange-600">
+              Klik tombol &quot;Simpan Hero Section&quot; di atas, lalu section tombol akan muncul di sini.
+            </p>
+            <p className="text-xs text-gray-500 mt-2">Debug: Hero ID = {heroForm.id || 'null'}</p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Why Choose Us */}
       <Card>
@@ -487,6 +505,12 @@ export default function HomepageEditor() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Hero Stats Section */}
+      <HeroStatsSection />
+
+      {/* Partners Section */}
+      <PartnersSection />
     </div>
   );
 }

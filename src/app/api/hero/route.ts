@@ -8,6 +8,12 @@ export async function GET() {
     const hero = await prisma.heroSection.findFirst({
       where: { isActive: true },
       orderBy: { updatedAt: "desc" },
+      include: {
+        buttons: {
+          where: { isActive: true },
+          orderBy: { order: "asc" },
+        },
+      },
     });
 
     return NextResponse.json(hero || {});

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { Product, ProductType } from "@prisma/client";
+import { Product } from "@prisma/client";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductCardSkeletonGrid } from "@/components/product/ProductCardSkeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -18,10 +18,13 @@ function ProductsContent() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedType, setSelectedType] = useState<ProductType | "ALL">("ALL");
+  const [selectedType, setSelectedType] = useState<string | "ALL">("ALL");
+  const [availableTypes, setAvailableTypes] = useState<
+    Array<{ slug: string; name: string; color: string | null }>
+  >([]);
 
   const searchParams = useSearchParams();
-  const typeFromUrl = searchParams.get("type") as ProductType | null;
+  const typeFromUrl = searchParams.get("type") as string | null;
 
   // Debounce search query
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -47,6 +50,23 @@ function ProductsContent() {
       const response = await fetch("/api/products");
       const data = await response.json();
       setProducts(data);
+
+      // Extract unique types from products and fetch their details
+      const uniqueTypes = Array.from(new Set(data.map((p: Product) => p.type)));
+
+      if (uniqueTypes.length > 0) {
+        // Fetch product type details
+        const typesResponse = await fetch("/api/product-types");
+        const typesData = await typesResponse.json();
+
+        if (typesData.success) {
+          // Filter to only show types that have products
+          const activeTypes = typesData.data.filter((type: any) =>
+            uniqueTypes.includes(type.slug)
+          );
+          setAvailableTypes(activeTypes);
+        }
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -67,7 +87,9 @@ function ProductsContent() {
       filtered = filtered.filter(
         (p) =>
           p.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-          p.description.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+          p.description
+            .toLowerCase()
+            .includes(debouncedSearchQuery.toLowerCase())
       );
     }
 
@@ -117,24 +139,22 @@ function ProductsContent() {
               >
                 Semua
               </Button>
-              <Button
-                variant={selectedType === "UMROH" ? "default" : "outline"}
-                onClick={() => setSelectedType("UMROH")}
-                className={
-                  selectedType === "UMROH" ? "bg-secondary text-white" : ""
-                }
-              >
-                Umroh
-              </Button>
-              <Button
-                variant={selectedType === "HAJI" ? "default" : "outline"}
-                onClick={() => setSelectedType("HAJI")}
-                className={
-                  selectedType === "HAJI" ? "bg-secondary text-white" : ""
-                }
-              >
-                Haji
-              </Button>
+              {availableTypes.map((type) => (
+                <Button
+                  key={type.slug}
+                  variant={selectedType === type.slug ? "default" : "outline"}
+                  onClick={() => setSelectedType(type.slug)}
+                  className={selectedType === type.slug ? "text-white" : ""}
+                  style={{
+                    backgroundColor:
+                      selectedType === type.slug
+                        ? type.color || "#3b82f6"
+                        : undefined,
+                  }}
+                >
+                  {type.name}
+                </Button>
+              ))}
             </div>
           </div>
 
@@ -186,14 +206,16 @@ function ProductsContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
-      </>
-    }>
+    <Suspense
+      fallback={
+        <>
+          <Navbar />
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        </>
+      }
+    >
       <ProductsContent />
     </Suspense>
   );

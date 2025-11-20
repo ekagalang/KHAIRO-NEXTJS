@@ -73,7 +73,7 @@ model Product {
   price         Decimal       @db.Decimal(12, 2)
   discountPrice Decimal?      @db.Decimal(12, 2)
   duration      String        // "9 Hari 8 Malam"
-  type          ProductType   // HAJI atau UMROH
+  type          String        // Product type slug reference
   departure     DateTime
   quota         Int
   quotaFilled   Int           @default(0)
@@ -85,14 +85,27 @@ model Product {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   
+  productType   ProductType   @relation(fields: [type], references: [slug])
   cartItems     CartItem[]
   
   @@map("products")
 }
 
-enum ProductType {
-  HAJI
-  UMROH
+model ProductType {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  icon        String?   // Icon name from lucide-react
+  color       String?   // Hex color for badge
+  isActive    Boolean   @default(true)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  products    Product[]
+  
+  @@map("product_types")
 }
 
 // Model Cart Item (untuk tracking sementara)
@@ -169,19 +182,41 @@ model VisitorStat {
 
 // Model Hero Section
 model HeroSection {
-  id            String   @id @default(cuid())
-  title         String   @db.Text
-  subtitle      String   @db.Text
-  description   String?  @db.Text
-  buttonText    String   @default("Lihat Paket")
-  buttonLink    String   @default("/products")
+  id            String       @id @default(cuid())
+  title         String       @db.Text
+  subtitle      String       @db.Text
+  description   String?      @db.Text
+  buttonText    String       @default("Lihat Paket")
+  buttonLink    String       @default("/products")
   imageUrl      String?
-  backgroundUrl String?  // Background image or GIF URL
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  backgroundUrl String?      // Background image or GIF URL
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  buttons       HeroButton[]
 
   @@map("hero_sections")
+}
+
+// Model Hero Button
+model HeroButton {
+  id            String      @id @default(cuid())
+  heroSectionId String
+  text          String      // Text tombol
+  link          String      // Link tombol
+  variant       String      @default("primary") // primary, secondary, outline
+  bgColor       String?     // Custom background color
+  textColor     String?     // Custom text color
+  icon          String?     // Icon dari lucide-react (optional)
+  order         Int         @default(0)
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  heroSection   HeroSection @relation(fields: [heroSectionId], references: [id], onDelete: Cascade)
+
+  @@map("hero_buttons")
 }
 
 // Model Hero Stats
@@ -247,4 +282,45 @@ model Media {
   updatedAt   DateTime @updatedAt
 
   @@map("media")
+}
+// Model Partner Section Settings
+model PartnerSection {
+  id          String   @id @default(cuid())
+  title       String   @default("Rekanan Kami")
+  description String   @default("Dipercaya oleh partner terbaik")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("partner_sections")
+}
+
+// Model Partner untuk menampilkan logo rekanan
+model Partner {
+  id          String   @id @default(cuid())
+  name        String   // Nama partner/rekanan
+  logoUrl     String   // URL logo partner
+  websiteUrl  String?  // Website partner (optional)
+  order       Int      @default(0) // Urutan tampilan
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("partners")
+}
+
+// Model Social Media untuk floating buttons
+model SocialMedia {
+  id          String   @id @default(cuid())
+  name        String   // WhatsApp, Instagram, Facebook, Phone
+  icon        String   // Icon name dari lucide-react
+  url         String   // URL atau nomor telepon
+  bgColor     String   @default("bg-blue-500") // Tailwind color class
+  hoverColor  String   @default("bg-blue-600") // Tailwind hover color
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("social_media")
 }

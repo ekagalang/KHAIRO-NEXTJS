@@ -12,29 +12,34 @@ const inter = Inter({ subsets: ["latin"] });
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const response = await fetch(`${baseUrl}/api/settings`, {
-      cache: 'no-store',
+      cache: "no-store",
     });
 
-    if (!response.ok) throw new Error('Failed to fetch settings');
+    if (!response.ok) throw new Error("Failed to fetch settings");
 
     const settings = await response.json();
 
     return {
       title: settings.site_name || "Khairo Tour - Haji & Umroh Terpercaya",
-      description: settings.site_description || "Layanan tour Haji dan Umroh terpercaya dengan harga terjangkau",
-      icons: settings.site_favicon ? {
-        icon: settings.site_favicon,
-        shortcut: settings.site_favicon,
-        apple: settings.site_favicon,
-      } : undefined,
+      description:
+        settings.site_description ||
+        "Layanan tour Haji dan Umroh terpercaya dengan harga terjangkau",
+      icons: settings.site_favicon
+        ? {
+            icon: settings.site_favicon,
+            shortcut: settings.site_favicon,
+            apple: settings.site_favicon,
+          }
+        : undefined,
     };
   } catch (error) {
     console.error("Error fetching settings for metadata:", error);
     return {
       title: "Khairo Tour - Haji & Umroh Terpercaya",
-      description: "Layanan tour Haji dan Umroh terpercaya dengan harga terjangkau",
+      description:
+        "Layanan tour Haji dan Umroh terpercaya dengan harga terjangkau",
     };
   }
 }
@@ -46,7 +51,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <GoogleAnalytics />
         <VisitorTracker />
         <ErrorBoundary>

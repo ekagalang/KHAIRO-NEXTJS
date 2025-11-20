@@ -17,7 +17,9 @@
       "Bash(npm run prisma:seed:*)",
       "Bash(cat:*)",
       "Bash(find:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": []

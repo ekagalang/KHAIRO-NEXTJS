@@ -325,3 +325,13 @@ html {
   flex-direction: column;
   gap: 1.5rem;
 }
+
+/* Hide scrollbar for partner section */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

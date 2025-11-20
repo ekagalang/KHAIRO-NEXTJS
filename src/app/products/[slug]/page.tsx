@@ -24,7 +24,9 @@ async function getProduct(slug: string) {
   }
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProduct(slug);
 
@@ -45,9 +47,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     minimumFractionDigits: 0,
   }).format(Number(price));
 
-  const description = product.description.length > 160
-    ? product.description.substring(0, 157) + "..."
-    : product.description;
+  const description =
+    product.description.length > 160
+      ? product.description.substring(0, 157) + "..."
+      : product.description;
 
   return {
     title: `${product.name} | Khairo Tour`,
@@ -89,7 +92,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     other: {
       "product:price:amount": String(price),
       "product:price:currency": "IDR",
-      "product:availability": product.quotaFilled >= product.quota ? "out of stock" : "in stock",
+      "product:availability":
+        product.quotaFilled >= product.quota ? "out of stock" : "in stock",
       "product:category": product.type,
     },
   };
@@ -128,7 +132,15 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      <ProductDetailClient product={product} />
+      <ProductDetailClient
+        product={{
+          ...product,
+          price: Number(product.price) as any,
+          discountPrice: product.discountPrice
+            ? (Number(product.discountPrice) as any)
+            : null,
+        }}
+      />
     </>
   );
 }

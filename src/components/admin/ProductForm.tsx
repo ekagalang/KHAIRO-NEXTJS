@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Product, ProductType } from "@prisma/client";
+import { Product } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,7 @@ interface ProductFormProps {
 export function ProductForm({ product, isEdit = false }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [productTypes, setProductTypes] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
     name: product?.name || "",
@@ -35,7 +36,7 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
     price: product?.price?.toString() || "",
     discountPrice: product?.discountPrice?.toString() || "",
     duration: product?.duration || "",
-    type: product?.type || "UMROH",
+    type: product?.type || "",
     departure: product?.departure
       ? new Date(product.departure).toISOString().split("T")[0]
       : "",
@@ -53,6 +54,27 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
   const [itinerary, setItinerary] = useState<
     Array<{ day: number; title: string; description: string }>
   >((product?.itinerary as any[]) || [{ day: 1, title: "", description: "" }]);
+
+  // Fetch product types
+  useEffect(() => {
+    const fetchProductTypes = async () => {
+      try {
+        const response = await fetch("/api/product-types");
+        const data = await response.json();
+        if (data.success) {
+          setProductTypes(data.data);
+          // Set default type if creating new product
+          if (!product && data.data.length > 0) {
+            setFormData((prev) => ({ ...prev, type: data.data[0].slug }));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching product types:", error);
+        toast.error("Gagal memuat tipe produk");
+      }
+    };
+    fetchProductTypes();
+  }, [product]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,15 +203,18 @@ export function ProductForm({ product, isEdit = false }: ProductFormProps) {
               <Select
                 value={formData.type}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, type: value as ProductType })
+                  setFormData({ ...formData, type: value })
                 }
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Pilih tipe produk" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="UMROH">Umroh</SelectItem>
-                  <SelectItem value="HAJI">Haji</SelectItem>
+                  {productTypes.map((type) => (
+                    <SelectItem key={type.id} value={type.slug}>
+                      {type.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
