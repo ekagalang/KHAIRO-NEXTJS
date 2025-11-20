@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const response = await fetch(`${baseUrl}/api/settings`, {
-      cache: "no-store",
+      next: { revalidate: 3600 }, // Revalidate every hour
     });
 
     if (!response.ok) throw new Error("Failed to fetch settings");
